@@ -163,48 +163,12 @@ const Banner = () => {
         </svg>
       </motion.div>
 
-      {/* Animated background blobs */}
-      <motion.div
-        className="absolute bottom-24 left-1/4 z-0 w-64 h-64 bg-purple-500 rounded-full filter blur-3xl opacity-30"
-        animate={{
-          x: [0, 30, 0],
-          y: [0, -30, 0],
-          scale: [1, 1.1, 1]
-        }}
-        transition={{
-          repeat: Infinity,
-          duration: 15,
-          ease: "easeInOut"
-        }}
-      />
-
-      <motion.div
-        className="absolute top-24 right-1/4 z-0 w-56 h-56 bg-pink-500 rounded-full filter blur-3xl opacity-30"
-        animate={{
-          x: [0, -40, 0],
-          y: [0, 40, 0],
-          scale: [1, 1.2, 1]
-        }}
-        transition={{
-          repeat: Infinity,
-          duration: 18,
-          ease: "easeInOut"
-        }}
-      />
 
       {/* Wave SVG shape at bottom */}
-      <div className="absolute bottom-0 left-0 right-0 transform translate-y-1 z-10">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" className="w-full">
-          <path
-            fill="#f9fafb"
-            fillOpacity="1"
-            d="M0,128L48,144C96,160,192,192,288,186.7C384,181,480,139,576,138.7C672,139,768,181,864,181.3C960,181,1056,139,1152,138.7C1248,139,1344,181,1392,202.7L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
-          ></path>
-        </svg>
-      </div>
+
 
       {/* Carousel content */}
-      <div className="relative py-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-20">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-20">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center min-h-[450px] md:min-h-[550px]">
           {/* Left: Text with AnimatePresence for smooth transitions */}
           <div className="flex flex-col justify-center overflow-hidden">
@@ -300,7 +264,7 @@ const Banner = () => {
           </div>
 
           {/* Right: Image with AnimatePresence */}
-          <div className="relative ml-auto w-full">
+          <div className="relative ml-auto w-full hidden md:flex">
             <AnimatePresence mode="wait">
               <motion.div
                 key={`image-${currentSlide}`}
@@ -326,33 +290,6 @@ const Banner = () => {
                 </motion.div>
               </motion.div>
             </AnimatePresence>
-
-            <motion.div
-              className="absolute bottom-12 -left-12 z-0 w-40 h-40 bg-pink-400 rounded-full filter blur-2xl opacity-50"
-              animate={{
-                scale: [1, 1.2, 1],
-                opacity: [0.4, 0.6, 0.4]
-              }}
-              transition={{
-                repeat: Infinity,
-                duration: 4,
-                ease: "easeInOut"
-              }}
-            />
-
-            <motion.div
-              className="absolute top-1/3 -right-8 z-0 w-40 h-40 bg-purple-400 rounded-full filter blur-2xl opacity-50"
-              animate={{
-                scale: [1, 1.3, 1],
-                opacity: [0.4, 0.7, 0.4]
-              }}
-              transition={{
-                repeat: Infinity,
-                duration: 5,
-                ease: "easeInOut",
-                delay: 1
-              }}
-            />
           </div>
         </div>
 
@@ -417,6 +354,15 @@ const Banner = () => {
         >
           <FaArrowRight />
         </motion.button>
+      </div>
+      <div className="relative bottom-0 left-0 right-0 transform translate-y-1 z-10">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" className="w-full">
+          <path
+            fill="#f9fafb"
+            fillOpacity="1"
+            d="M0,128L48,144C96,160,192,192,288,186.7C384,181,480,139,576,138.7C672,139,768,181,864,181.3C960,181,1056,139,1152,138.7C1248,139,1344,181,1392,202.7L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+          ></path>
+        </svg>
       </div>
     </div>
   );
