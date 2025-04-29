@@ -54,10 +54,6 @@ const SearchBar = () => {
 
   return (
     <div className="relative mx-auto px-4 -mt-20 sm:-mt-24 md:-mt-32 z-30 max-w-6xl">
-      {/* Decorative blobs */}
-      <div className="absolute -top-12 -left-12 w-24 h-24 bg-pink-400 rounded-full filter blur-xl opacity-20 animate-blob"></div>
-      <div className="absolute -top-16 -right-16 w-36 h-36 bg-purple-400 rounded-full filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
-      <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-yellow-300 rounded-full filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
 
       <form
         onSubmit={handleSearch}

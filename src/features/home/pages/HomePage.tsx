@@ -15,23 +15,21 @@ const HomePage = () => {
           </div>
         </section>
         <div className="animate-fadeIn space-y-8 md:space-y-0">
-          <section className=" pt-10 md:pt-12">
+          <section className=" py-6 md:pt-6">
             <CategorySection />
           </section>
-          <section className="bg-white md:py-6">
+          <section className="md:py-12 bg-white">
+            <PromotionSection />
+
+          </section>
+
+          <section className="py-6 md:py-6">
             <FacilitySection
               title="Địa điểm nổi bật"
               subtitle="Khám phá những địa điểm được đánh giá cao nhất"
               type="featured"
             />
-          </section>
 
-          <section className="py-6 md:py-6">
-            <FacilitySection
-              title="Gợi ý cho bạn"
-              subtitle="Dựa trên sở thích và lịch sử của bạn"
-              type="suggested"
-            />
           </section>
 
           <section className="bg-white py-6 md:py-6">
@@ -41,8 +39,12 @@ const HomePage = () => {
               type="nearby"
             />
           </section>
-          <section className="mt-8">
-            <PromotionSection />
+          <section className="py-6 md:py-6">
+            <FacilitySection
+              title="Gợi ý cho bạn"
+              subtitle="Dựa trên sở thích và lịch sử của bạn"
+              type="suggested"
+            />
           </section>
         </div>
       </main>

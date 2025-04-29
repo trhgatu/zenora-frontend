@@ -51,19 +51,12 @@ const promotions: Promotion[] = [
 
 const PromotionSection = () => {
   return (
-    <section className="bg-gradient-to-br from-indigo-50 to-blue-50 relative overflow-hidden mx-auto px-4 container">
-      {/* Decorative elements */}
-      <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-200 rounded-full filter blur-3xl opacity-30"></div>
-      <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-blue-200 rounded-full filter blur-3xl opacity-30"></div>
-
-
-      <div className="section-container relative z-10">
+    <section className="bg-gradient-to-br shadow-cyan-500 from-indigo-200 rounded-3xl to-blue-500 relative px-4 overflow-hidden mx-auto container">
+      <div className="container mx-auto relative z-10 md:p-10">
         {/* Section header */}
-        <div className="section-header">
-          <h2 className="section-title">
-            <span className="text-gradient">Ưu Đãi Đặc Biệt</span>
-          </h2>
-          <p className="section-subtitle">
+        <div className="mb-6">
+            <h1 className="text-gradient text-4xl py-2 font-bold text-center">Ưu đãi đặc biệt</h1>
+          <p className="text-base text-center mt-2">
             Khám phá những ưu đãi hấp dẫn từ các cơ sở làm đẹp và spa hàng đầu
           </p>
         </div>
@@ -127,12 +120,6 @@ const PromotionSection = () => {
             <FaArrowRight className="ml-2" />
           </Link>
         </div>
-      </div>
-
-      <div className="wave-divider absolute bottom-0 left-0 w-full">
-        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-          <path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z" fill="#ffffff"></path>
-        </svg>
       </div>
     </section>
   );
