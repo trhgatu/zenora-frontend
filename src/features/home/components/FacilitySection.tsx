@@ -1,21 +1,6 @@
 import { Link } from 'react-router-dom';
 import { FaStar, FaMapMarkerAlt, FaRegClock, FaHeart, FaRegHeart, FaArrowRight } from 'react-icons/fa';
-
-interface Facility {
-  id: number;
-  name: string;
-  imageUrl: string;
-  rating: number;
-  reviewCount: number;
-  category: string;
-  location: string;
-  openHours: string;
-  priceRange: string;
-  isFavorite: boolean;
-  tags: string[];
-  link: string;
-}
-
+import { Facility } from '@/features/facility/types/facility';
 // Sample data for different facility types
 const facilityData: Record<string, Facility[]> = {
   featured: [
