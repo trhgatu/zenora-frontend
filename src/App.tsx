@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { MainLayout } from '@/layouts/MainLayout';
 import HomePage from '@/features/home/pages/HomePage';
 import FacilityDetailPage from '@/features/facility/pages/FacilityDetailPage';
@@ -18,7 +18,8 @@ function App() {
         </Route>
 
         <Route path="admin" element={<AdminLayout />}>
-          <Route path='dashboard' element={<DashboardPage />} />
+          <Route index element={<Navigate to="/admin/dashboard" replace />} />
+          <Route path="dashboard" element={<DashboardPage />} />
         </Route>
       </Routes>
     </Router>
