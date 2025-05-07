@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
 import { FaStar, FaMapMarkerAlt, FaRegClock, FaHeart, FaRegHeart, FaArrowRight } from 'react-icons/fa';
-import { Facility } from '@/features/facility/types/facility';
+import { IFacility } from '@/features/facility/types/facility';
 // Sample data for different facility types
-const facilityData: Record<string, Facility[]> = {
+const facilityData: Record<string, IFacility[]> = {
   featured: [
     {
-      id: 1,
+      _id: 1,
       name: "Lavender Spa & Wellness Center",
       imageUrl: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
       rating: 4.8,
@@ -19,7 +19,7 @@ const facilityData: Record<string, Facility[]> = {
       link: "/facility/1"
     },
     {
-      id: 2,
+      _id: 2,
       name: "Elite Fitness & Yoga Studio",
       imageUrl: "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1075&q=80",
       rating: 4.6,
@@ -33,7 +33,7 @@ const facilityData: Record<string, Facility[]> = {
       link: "/facility/2"
     },
     {
-      id: 3,
+      _id: 3,
       name: "Aurora Beauty & Cosmetic Clinic",
       imageUrl: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
       rating: 4.9,
@@ -47,7 +47,7 @@ const facilityData: Record<string, Facility[]> = {
       link: "/facility/3"
     },
     {
-      id: 4,
+      _id: 4,
       name: "Zen Dental Care",
       imageUrl: "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80",
       rating: 4.7,
@@ -63,7 +63,7 @@ const facilityData: Record<string, Facility[]> = {
   ],
   suggested: [
     {
-      id: 5,
+      _id: 5,
       name: "Serenity Day Spa",
       imageUrl: "https://images.unsplash.com/photo-1519415510236-718bdfcd89c8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
       rating: 4.5,
@@ -77,7 +77,7 @@ const facilityData: Record<string, Facility[]> = {
       link: "/facility/5"
     },
     {
-      id: 6,
+      _id: 6,
       name: "Glamour Hair & Nail Salon",
       imageUrl: "https://images.unsplash.com/photo-1635273051839-03c73069434b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
       rating: 4.7,
@@ -91,7 +91,7 @@ const facilityData: Record<string, Facility[]> = {
       link: "/facility/6"
     },
     {
-      id: 7,
+      _id: 7,
       name: "Vitality Wellness Center",
       imageUrl: "https://images.unsplash.com/photo-1519823551278-64ac92734fb1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80",
       rating: 4.8,
@@ -105,7 +105,7 @@ const facilityData: Record<string, Facility[]> = {
       link: "/facility/7"
     },
     {
-      id: 8,
+      _id: 8,
       name: "Pure Aesthetics Clinic",
       imageUrl: "https://images.unsplash.com/photo-1598887142487-3c854d51d2c7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
       rating: 4.9,
@@ -121,7 +121,7 @@ const facilityData: Record<string, Facility[]> = {
   ],
   nearby: [
     {
-      id: 9,
+      _id: 9,
       name: "Harmony Spa Retreat",
       imageUrl: "https://images.unsplash.com/photo-1610051276549-22e10a21bd12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
       rating: 4.6,
@@ -135,7 +135,7 @@ const facilityData: Record<string, Facility[]> = {
       link: "/facility/9"
     },
     {
-      id: 10,
+      _id: 10,
       name: "FitLife Gym & Wellness",
       imageUrl: "https://images.unsplash.com/photo-1558611848-73f7eb4001a1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1171&q=80",
       rating: 4.5,
@@ -149,7 +149,7 @@ const facilityData: Record<string, Facility[]> = {
       link: "/facility/10"
     },
     {
-      id: 11,
+      _id: 11,
       name: "Crown Dental Clinic",
       imageUrl: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1168&q=80",
       rating: 4.8,
@@ -163,7 +163,7 @@ const facilityData: Record<string, Facility[]> = {
       link: "/facility/11"
     },
     {
-      id: 12,
+      _id: 12,
       name: "Chic Beauty Lounge",
       imageUrl: "https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80",
       rating: 4.7,
@@ -217,7 +217,7 @@ const FacilitySection = ({ title, subtitle, type }: FacilitySectionProps) => {
       {/* Facilities Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {facilities.map((facility) => (
-          <Link to={facility.link} key={facility.id} className="group">
+          <Link to={facility.link} key={facility._id} className="group">
             <div className="bg-white rounded-xl shadow-md overflow-hidden h-full flex flex-col transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
               {/* Image Container */}
               <div className="relative">

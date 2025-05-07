@@ -1,26 +1,17 @@
 import { ICategory } from "@/features/facility/types/category";
 
-interface IService {
-  _id: string;
-  name: string;
-  description?: string;
-  price?: number;
-  duration?: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
 export interface IFacility {
-    _id: string;
+    _id: number;
     name: string;
     imageUrl: string;
+    category: string;
     rating: number;
     description?: string;
     address?: string;
     phoneNumber?: string;
     reviewCount: number;
-    categoryId : ICategory;
-    services?: IService[];
+    categoryId? : ICategory;
+    servicesId?: string[];
     location: string;
     openHours: string;
     priceRange: string;
@@ -28,6 +19,6 @@ export interface IFacility {
     tags: string[];
     link: string;
     gallery?: string[];
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
   }
