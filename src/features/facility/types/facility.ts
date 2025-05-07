@@ -4,7 +4,7 @@ export interface IFacility {
     _id: string;
     name: string;
     imageUrl: string;
-    category: string;
+    category?: string;
     rating: number;
     description?: string;
     address?: string;

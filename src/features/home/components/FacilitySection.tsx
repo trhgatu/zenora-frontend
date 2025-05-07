@@ -228,7 +228,7 @@ const FacilitySection = ({ title, subtitle, type }: FacilitySectionProps) => {
                 />
 
                 {/* Category Badge */}
-                <div className={`absolute top-4 left-4 bg-gradient-to-r ${getCategoryColor(facility.category)} text-white text-xs font-medium px-2.5 py-1 rounded-full`}>
+                <div className={`absolute top-4 left-4 bg-gradient-to-r ${getCategoryColor(facility?.category || '')} text-white text-xs font-medium px-2.5 py-1 rounded-full`}>
                   {facility.category}
                 </div>
 
