@@ -1,7 +1,7 @@
 import { ICategory } from "@/features/facility/types/category";
 
 export interface IFacility {
-    _id: number;
+    _id: string;
     name: string;
     imageUrl: string;
     category: string;

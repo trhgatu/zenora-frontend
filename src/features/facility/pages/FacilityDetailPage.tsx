@@ -45,8 +45,8 @@ const FacilityDetailPage: React.FC = () => {
       <div className="flex items-center py-4 text-sm text-gray-500">
         <a href="/" className="hover:text-blue-600">Trang chủ</a>
         <ChevronRight size={16} className="mx-1" />
-        <a href={`/category/${facility.categoryId._id}`} className="hover:text-blue-600">
-          {facility.categoryId.name}
+        <a href={`/category/${facility.categoryId?._id}`} className="hover:text-blue-600">
+          {facility.categoryId?.name}
         </a>
         <ChevronRight size={16} className="mx-1" />
         <span className="text-gray-700">{facility.name}</span>
