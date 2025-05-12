@@ -4,6 +4,7 @@ const ROUTERS = {
         login: "/login",
         register: "/register",
         facility: "/facility",
+        booking: "/booking",
         facilityDetail: "/facility/:id",
         serviceProvider: "/dang-ky-co-so-lam-dep",
         appointment: "/dat-lich",

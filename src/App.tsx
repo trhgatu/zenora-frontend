@@ -7,6 +7,7 @@ import FacilityManagePage from '@/features/admin/pages/FacilityManage';
 import { LoginPage, RegisterPage } from '@/features/auth/pages';
 import { AdminLayout } from '@/layouts/AdminLayout';
 import ROUTERS from '@/constants/router';
+import BookingPage from './features/booking/pages/BookingPage';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path={ROUTERS.USER.facilityDetail.replace(':id', ':id')} element={<FacilityDetailPage />} />
           <Route path={ROUTERS.USER.login} element={<LoginPage />} />
           <Route path={ROUTERS.USER.register} element={<RegisterPage />} />
+          <Route path={ROUTERS.USER.booking} element={<BookingPage/>} />
         </Route>
 
         <Route path={ROUTERS.ADMIN.root} element={<AdminLayout />}>
@@ -24,6 +26,7 @@ function App() {
           <Route path={ROUTERS.ADMIN.dashboard} element={<DashboardPage />} />
           <Route path={ROUTERS.ADMIN.facility} element={<FacilityManagePage />} />
         </Route>
+        <Route path="/booking" element={<BookingPage />} />
       </Routes>
     </Router>
   );
