@@ -1,6 +1,6 @@
 // src/pages/user/facilityDetailPage.tsx
 import { useParams } from 'react-router-dom';
-import { facilityData } from '@/features/facility/data/facilityData';
+import { facilityData } from '@/features/user/facility/data/facilityData';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -19,7 +19,7 @@ const TabContent: React.FC<{
   );
 };
 
-const FacilityDetailPage: React.FC = () => {
+export const FacilityDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const facility = facilityData.find(p => p._id === id);
   const [activeTab, setActiveTab] = useState("description");
@@ -309,5 +309,3 @@ const FacilityDetailPage: React.FC = () => {
     </div>
   );
 };
-
-export default FacilityDetailPage;

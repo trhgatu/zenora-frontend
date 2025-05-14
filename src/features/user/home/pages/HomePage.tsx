@@ -2,9 +2,9 @@ import Banner from "../components/Banner";
 import CategorySection from "../components/CategorySection";
 import FacilitySection from "../components/FacilitySection";
 import PromotionSection from "../components/PromotionSection";
-import SearchBar from "@/features/home/components/SearchBar";
+import SearchBar from "@/features/user/home/components/SearchBar";
 
-const HomePage = () => {
+export const HomePage = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <main className="flex-grow">
@@ -51,5 +51,3 @@ const HomePage = () => {
     </div>
   );
 };
-
-export default HomePage;

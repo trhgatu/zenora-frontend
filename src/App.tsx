@@ -1,16 +1,17 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { MainLayout } from '@/layouts/MainLayout';
-import HomePage from '@/features/home/pages/HomePage';
-import FacilityDetailPage from '@/features/facility/pages/FacilityDetailPage';
+import { HomePage } from '@/features/user/home/pages';
+import { FacilityDetailPage } from '@/features/user/facility/pages';
 import DashboardPage from '@/features/admin/pages/Dashboard';
 import FacilityManagePage from '@/features/admin/pages/FacilityManage';
-import { LoginPage, RegisterPage } from '@/features/auth/pages';
-import { AdminLayout } from '@/layouts/AdminLayout';
+import { LoginPage, RegisterPage } from '@/features/user/auth/pages';
+import { AdminLayout, MainLayout } from '@/layouts';
 import ROUTERS from '@/constants/router';
+import ScrollToTop from '@/components/ScrollToTop';
 
 function App() {
   return (
     <Router>
+      <ScrollToTop/>
       <Routes>
         <Route path={ROUTERS.USER.home} element={<MainLayout />}>
           <Route index element={<HomePage />} />
