@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { HomePage } from '@/features/user/home/pages';
 import { FacilityDetailPage } from '@/features/user/facility/pages';
-import DashboardPage from '@/features/admin/pages/Dashboard';
-import FacilityManagePage from '@/features/admin/pages/FacilityManage';
+import DashboardPage from '@/features/admin/dashboard/pages/Dashboard';
+import FacilityManagePage from '@/features/admin/dashboard/pages/FacilityManage';
 import { LoginPage, RegisterPage } from '@/features/user/auth/pages';
 import { AdminLayout, MainLayout } from '@/layouts';
 import ROUTERS from '@/constants/router';
