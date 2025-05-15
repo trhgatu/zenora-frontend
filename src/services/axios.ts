@@ -1,7 +1,7 @@
 // src/services/axios.ts
-import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosInstance/* , InternalAxiosRequestConfig, AxiosResponse */ } from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:7293/api/';
+const API_URL = import.meta.env.VITE_API_URL || 'https://localhost:7293/api/';
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: API_URL,
@@ -10,7 +10,7 @@ const axiosInstance: AxiosInstance = axios.create({
   },
 });
 
-axiosInstance.interceptors.request.use(
+/* axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem('token');
     if (token && config.headers) {
@@ -28,5 +28,5 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(new Error(message));
   }
 );
-
+ */
 export default axiosInstance;
