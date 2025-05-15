@@ -15,7 +15,8 @@ const ROUTERS = {
         user: "/admin/users",
         dashboard: "/admin/dashboard",
         facility: "/admin/facilities",
-        promotion: "/admin/promotions"
+        promotion: "/admin/promotions",
+        role: "/admin/roles"
     },
 }
 export default ROUTERS;

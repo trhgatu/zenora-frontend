@@ -9,6 +9,7 @@ import ScrollToTop from '@/components/ScrollToTop';
 import ManageFacilityPage from '@/features/admin/manage-facilities/pages/ManageFacility';
 import ManageUserPage from '@/features/admin/manage-users/pages/ManageUser';
 import ManagePromotionPage from '@/features/admin/manage-promotions/pages/ManagePromotion';
+import ManageRolePage from '@/features/admin/manage-roles/pages/ManageRole';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path={ROUTERS.ADMIN.facility} element={<ManageFacilityPage />} />
           <Route path={ROUTERS.ADMIN.user} element={<ManageUserPage />} />
           <Route path={ROUTERS.ADMIN.promotion} element={<ManagePromotionPage />} />
+          <Route path={ROUTERS.ADMIN.role} element={<ManageRolePage />} />
         </Route>
       </Routes>
     </Router>

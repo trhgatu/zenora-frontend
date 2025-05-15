@@ -52,8 +52,8 @@ const data = {
       icon: IconFolder,
     },
     {
-      title: "Team",
-      url: "#",
+      title: "Quản lý vai trò",
+      url: ROUTERS.ADMIN.role,
       icon: IconUsers,
     },
   ],
