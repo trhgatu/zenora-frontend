@@ -53,7 +53,7 @@ const data = {
     },
     {
       title: "Quản lý vai trò",
-      url: ROUTERS.ADMIN.role,
+      url: ROUTERS.ADMIN.role.root,
       icon: IconUsers,
     },
   ],

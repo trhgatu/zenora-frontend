@@ -1,4 +1,4 @@
-export default function CreateRolePage() {
+export const CreateRolePage = () => {
   return (
     <div>CreateRolePage</div>
   )

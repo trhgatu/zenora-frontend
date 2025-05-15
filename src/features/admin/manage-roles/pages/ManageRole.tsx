@@ -1,51 +1,51 @@
+import { useNavigate } from "react-router-dom"
 import { useState, useEffect } from "react"
-import { getAllRoles } from "@/features/admin/manage-roles/services/roleService";
-import { RoleTable } from "@/features/admin/manage-roles/components/RoleTable";
-import { Role } from "@/features/admin/manage-roles/types/role";
+import { RoleTable } from "../components/RoleTable"
+import { getAllRoles, deleteRoleById } from "../services/roleService"
+import { Role } from "../types/role"
+import ROUTERS from "@/constants/router"
 
-export default function ManageRolePage() {
+export const ManageRolePage = () => {
+  const navigate = useNavigate()
   const [roles, setRoles] = useState<Role[]>([])
-  const [totalPages, setTotalPages] = useState(1)
-  const [pageIndex, setPageIndex] = useState(0)
-  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0)
+  const [pageCount, setPageCount] = useState(1)
 
   useEffect(() => {
-    const fetchRoles = async () => {
-      try {
-        const response = await getAllRoles(pageIndex + 1, 10)
-        setRoles(response.items)
-        setTotalPages(response.totalPages)
-      } catch (error) {
-        console.error("Failed to fetch roles", error)
-      } finally {
-        setLoading(false)
-      }
+    const fetch = async () => {
+      const res = await getAllRoles(page + 1, 10)
+      setRoles(res.items)
+      setPageCount(res.totalPages)
     }
+    fetch()
+  }, [page])
 
-    fetchRoles()
-  }, [pageIndex])
   const handleEdit = (role: Role) => {
-    console.log("Edit", role)
-    // open modal or navigate to edit page
+    navigate(ROUTERS.ADMIN.role.edit(role.id))
   }
 
-  const handleDelete = (role: Role) => {
-    console.log("Delete", role)
-    // confirm and call delete API
+  const handleDelete = async (role: Role) => {
+    if (window.confirm(`Are you sure you want to delete ${role.roleName}?`)) {
+      await deleteRoleById(role.id)
+      setRoles((prev) => prev.filter((r) => r.id !== role.id))
+    }
   }
+
   return (
     <div className="p-6">
-      <h2 className="text-xl font-semibold mb-4">Manage Roles</h2>
-      {loading ? <p>Loading...</p> : <RoleTable
+      <h2 className="font-semibold mb-4">
+        Manage Roles
+      </h2>
+      <RoleTable
         data={roles}
         onEdit={handleEdit}
         onDelete={handleDelete}
         pagination={{
-          pageIndex,
-          pageCount: totalPages,
-          onPageChange: setPageIndex,
+          pageIndex: page,
+          pageCount: pageCount,
+          onPageChange: setPage,
         }}
-      />}
+      />
     </div>
   )
 }
