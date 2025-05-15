@@ -42,13 +42,13 @@ const data = {
       icon: IconListDetails,
     },
     {
-      title: "Analytics",
-      url: "#",
+      title: "Quản lý người dùng",
+      url: ROUTERS.ADMIN.user,
       icon: IconChartBar,
     },
     {
-      title: "Projects",
-      url: "#",
+      title: "Quản lý ưu đãi",
+      url: ROUTERS.ADMIN.promotion,
       icon: IconFolder,
     },
     {
