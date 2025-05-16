@@ -12,6 +12,10 @@ const ROUTERS = {
     },
     ADMIN: {
         root: "/admin",
+        auth: {
+          root: "/admin/auth",
+          login : "/admin/auth/login"
+        },
         user: {
             root: "/admin/users",
             create: "/admin/users/create",
