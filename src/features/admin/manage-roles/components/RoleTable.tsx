@@ -21,6 +21,7 @@ interface RoleTableProps {
   data: Role[]
   onEdit?: (role: Role) => void
   onDelete?: (role: Role) => void
+  onShow?: (role: Role) => void
   pagination?: {
     pageIndex: number
     pageCount: number
@@ -31,6 +32,7 @@ interface RoleTableProps {
 export const RoleTable: React.FC<RoleTableProps> = ({
   data,
   onEdit,
+  onShow,
   onDelete,
   pagination
 
@@ -61,6 +63,9 @@ export const RoleTable: React.FC<RoleTableProps> = ({
       header: "Actions",
       cell: ({ row }) => (
         <div className="flex gap-2">
+          <Button size="sm" variant="outline" onClick={() => onShow?.(row.original)}>
+            Show
+          </Button>
           <Button size="sm" variant="outline" onClick={() => onEdit?.(row.original)}>
             Edit
           </Button>

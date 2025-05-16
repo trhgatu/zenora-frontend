@@ -1,3 +1,5 @@
 export * from './ManageRole'
 export * from './CreateRole'
 export * from './EditRole'
+export * from './DetailRolePage'
+export * from './ManageRole'

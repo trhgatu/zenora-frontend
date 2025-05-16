@@ -8,7 +8,7 @@ import ROUTERS from '@/constants/router'
 import ScrollToTop from '@/components/ScrollToTop'
 /* import ManageFacilityPage from '@/features/admin/manage-facilities/pages/ManageFacility' */
 import ManagePromotionPage from '@/features/admin/manage-promotions/pages/ManagePromotion'
-import { CreateRolePage, EditRolePage, ManageRolePage } from '@/features/admin/manage-roles/pages'
+import { CreateRolePage, DetailRolePage, EditRolePage, ManageRolePage } from '@/features/admin/manage-roles/pages'
 import { ManageCategoryPage } from '@/features/admin/manage-categories/pages'
 import { CreateUserPage, EditUserPage, ManageUserPage } from '@/features/admin/manage-users/pages'
 import { ManageServicePage } from '@/features/admin/manage-services/pages/ManageService'
@@ -54,6 +54,7 @@ function App() {
             <Route index element={<ManageRolePage />} />
             <Route path="create" element={<CreateRolePage />} />
             <Route path="edit/:id" element={<EditRolePage />} />
+            <Route path="detail/:id" element={<DetailRolePage />} />
           </Route>
         </Route>
       </Routes>

@@ -45,6 +45,7 @@ const ROUTERS = {
             root: "/admin/roles",
             create: "/admin/roles/create",
             edit: (id: string) => `/admin/roles/edit/${id}`,
+            show: (id: string) => `/admin/roles/detail/${id}`,
         },
 
     },

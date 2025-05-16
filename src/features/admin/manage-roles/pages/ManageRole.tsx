@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom"
 import { useState, useEffect } from "react"
 import { RoleTable } from "../components/RoleTable"
 import { getAllRoles, deleteRoleById } from "../services/roleService"
-import { Role } from "../types/role"
+import { Role } from "@/features/admin/manage-roles/types/role"
 import ROUTERS from "@/constants/router"
 import { Button } from "@/components/ui/button"
 
@@ -23,6 +23,9 @@ export const ManageRolePage = () => {
 
   const handleEdit = (role: Role) => {
     navigate(ROUTERS.ADMIN.role.edit(role.id))
+  }
+  const handleShow = (role: Role) => {
+    navigate(ROUTERS.ADMIN.role.show(role.id))
   }
 
   const handleDelete = async (role: Role) => {
@@ -46,6 +49,7 @@ export const ManageRolePage = () => {
         data={roles}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onShow={handleShow}
         pagination={{
           pageIndex: page,
           pageCount: pageCount,
