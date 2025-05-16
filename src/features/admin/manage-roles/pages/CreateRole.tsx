@@ -25,15 +25,18 @@ export const CreateRolePage = () => {
   });
 
   const onSubmit = async (data: CreateRoleFormData) => {
+    const toastId = toast.loading("Đang tạo vai trò...");
+
     try {
       await createRole(data);
-      toast.success("Role created successfully!");
+      toast.success("Tạo vai trò thành công!", { id: toastId });
       navigate("/admin/roles");
     } catch (error) {
-      console.log(error)
-      toast.error("Failed to create role.");
+      console.error(error);
+      toast.error("Tạo vai trò thất bại.", { id: toastId });
     }
   };
+
 
   return (
     <div className="p-6">
