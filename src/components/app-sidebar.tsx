@@ -73,7 +73,7 @@ const data = {
     },
     {
       title: "Quản lý thanh toán",
-      url: ROUTERS.ADMIN.role.root,
+      url: ROUTERS.ADMIN.payment.root,
       icon: IconUsers,
     },
   ],

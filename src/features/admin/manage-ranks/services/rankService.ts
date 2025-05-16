@@ -9,3 +9,13 @@ export const getAllRanks = async (page: number, size: number) => {
     });
     return response.data.data;
 }
+
+export const createRank = async (data: {
+  name: string;
+  minPoints: number;
+  discountPercent: number;
+  description?: string;
+}) => {
+  const res = await axiosInstance.post("/Rank/create/rank", data);
+  return res.data;
+};
