@@ -31,10 +31,11 @@ export const AdminLoginPage = () => {
   }
 
   useEffect(() => {
-    if (isAuthenticated && user?.role === 'Admin') {
-      navigate('/admin/dashboard')
-    }
-  }, [isAuthenticated, user, navigate])
+  console.log("✅ user info:", user);
+  if (isAuthenticated && user?.role === 'Admin') {
+    navigate('/admin/dashboard')
+  }
+}, [isAuthenticated, user, navigate])
 
   return (
     <div className="min-h-screen flex items-center justify-center">

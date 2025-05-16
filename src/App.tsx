@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { HomePage } from '@/features/user/home/pages'
 import { FacilityDetailPage } from '@/features/user/facility/pages'
@@ -16,8 +18,23 @@ import { CreateServicePage, DetailServicePage, EditServicePage } from '@/feature
 import { CreateRankPage, EditRankPage, ManageRankPage, DetailRankPage } from '@/features/admin/manage-ranks/pages'
 import PrivateRoute from '@/routes/PrivateRoute'
 import { AdminLoginPage } from '@/features/admin/auth/page'
-
+import { useAppDispatch, useAppSelector } from '@/hooks'
+import { restoreAuth } from '@/store/authSlice'
 function App() {
+  const dispatch = useAppDispatch()
+  const { isInitialized } = useAppSelector(state => state.auth)
+
+  useEffect(() => {
+    dispatch(restoreAuth())
+  }, [dispatch])
+
+  if (!isInitialized) {
+    return (
+      <div className="flex items-center justify-center h-screen text-gray-500">
+        Đang tải trạng thái đăng nhập...
+      </div>
+    )
+  }
   return (
     <Router>
       <ScrollToTop />
