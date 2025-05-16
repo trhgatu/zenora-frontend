@@ -42,6 +42,12 @@ const data = {
       icon: IconListDetails,
     },
     {
+      title: "Quản lý danh mục",
+      url: ROUTERS.ADMIN.category,
+      icon: IconListDetails,
+    },
+
+    {
       title: "Quản lý người dùng",
       url: ROUTERS.ADMIN.user,
       icon: IconChartBar,

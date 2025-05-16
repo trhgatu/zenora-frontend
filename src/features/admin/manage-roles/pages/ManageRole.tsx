@@ -4,6 +4,7 @@ import { RoleTable } from "../components/RoleTable"
 import { getAllRoles, deleteRoleById } from "../services/roleService"
 import { Role } from "../types/role"
 import ROUTERS from "@/constants/router"
+import { Button } from "@/components/ui/button"
 
 export const ManageRolePage = () => {
   const navigate = useNavigate()
@@ -33,9 +34,14 @@ export const ManageRolePage = () => {
 
   return (
     <div className="p-6">
-      <h2 className="font-semibold mb-4">
-        Manage Roles
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="font-semibold">
+        Roles Management
       </h2>
+      <Button onClick={() => navigate(ROUTERS.ADMIN.role.create)}>
+        Create role
+      </Button>
+      </div>
       <RoleTable
         data={roles}
         onEdit={handleEdit}

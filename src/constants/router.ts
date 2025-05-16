@@ -12,8 +12,12 @@ const ROUTERS = {
     },
     ADMIN: {
         root: "/admin",
-        user: "/admin/users",
-        catergory: "/admin/categories",
+        user: {
+            root: "/admin/users",
+            create: "/admin/users/create",
+            edit: (id: string) => `/admin/users/edit/${id}`,
+        },
+        category: "/admin/categories",
         dashboard: "/admin/dashboard",
         facility: "/admin/facilities",
         promotion: "/admin/promotions",

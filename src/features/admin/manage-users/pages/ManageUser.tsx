@@ -1,37 +1,54 @@
 import { useState, useEffect } from "react"
-import { DataTable } from "@/components/data-table"
 import { getAllUsers } from "@/features/admin/manage-users/services/userServices"
-
+import { User } from "@/features/admin/manage-users/types/user";
+import { UserTable } from "@/features/admin/manage-users/components/UserTable";
+import { useNavigate } from "react-router-dom";
+import ROUTERS from "@/constants/router";
 
 export default function ManageUserPage() {
-  const [users, setUsers] = useState([])
-  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const [users, setUsers] = useState<User[]>([])
+  const [page, setPage] = useState(0)
+  const [pageCount, setPageCount] = useState(1)
 
   useEffect(() => {
     const fetchUsers = async () => {
-      try {
-        const data = await getAllUsers();
-        setUsers(data);
-      } catch (error) {
-        console.error("Failed to fetch users", error);
-      } finally {
-        setLoading(false);
-      }
+        const res = await getAllUsers(page + 1, 10)
+        setUsers(res.items)
+        setPageCount(res.totalPages)
     };
-
     fetchUsers();
-  }, []);
+  }, [page]);
+
+  const handleEdit = (user: User) => {
+    navigate(ROUTERS.ADMIN.user.edit(user.id))
+  }
+
+  /* const handleDelete = async (role: Role) => {
+    if (window.confirm(`Are you sure you want to delete ${role.roleName}?`)) {
+      await deleteRoleById(role.id)
+      setRoles((prev) => prev.filter((r) => r.id !== role.id))
+    }
+  } */
   return (
-    <div className="flex flex-1 flex-col">
-      <div className="@container/main flex flex-1 flex-col gap-2">
-        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-          {loading ? (
-            <p>Loading...</p>
-          ) : (
-            <DataTable data={users} />
-          )}
-        </div>
+    <div className="p-6">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="font-semibold">
+        Roles Management
+      </h2>
+  {/*     <Button onClick={() => navigate(ROUTERS.ADMIN.role.create)}>
+        Create role
+      </Button> */}
       </div>
+      <UserTable
+        data={users}
+        onEdit={handleEdit}
+        pagination={{
+          pageIndex: page,
+          pageCount: pageCount,
+          onPageChange: setPage,
+        }}
+      />
     </div>
   )
 }

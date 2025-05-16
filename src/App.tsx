@@ -10,7 +10,8 @@ import ManageFacilityPage from '@/features/admin/manage-facilities/pages/ManageF
 import ManageUserPage from '@/features/admin/manage-users/pages/ManageUser'
 import ManagePromotionPage from '@/features/admin/manage-promotions/pages/ManagePromotion'
 import { CreateRolePage, EditRolePage, ManageRolePage } from '@/features/admin/manage-roles/pages'
-import { ManageCategoryPage } from '@/features/admin/manage-categories/pages/ManageCategory'
+import { ManageCategoryPage } from '@/features/admin/manage-categories/pages'
+import { EditUserPage } from '@/features/admin/manage-users/pages/EditUser'
 
 function App() {
   return (
@@ -29,13 +30,16 @@ function App() {
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="facilities" element={<ManageFacilityPage />} />
           <Route path="categories" element={<ManageCategoryPage />} />
-          <Route path="users" element={<ManageUserPage />} />
           <Route path="promotions" element={<ManagePromotionPage />} />
-
+          <Route path="users">
+            <Route index element={<ManageUserPage />} />
+            {/* <Route path="create" element={<CreateUserPage />} /> */}
+            <Route path="edit/:id" element={<EditUserPage />} />
+          </Route>
           <Route path="roles">
             <Route index element={<ManageRolePage />} />
             <Route path="create" element={<CreateRolePage />} />
-             <Route path="edit/:id" element={<EditRolePage />} />
+            <Route path="edit/:id" element={<EditRolePage />} />
           </Route>
         </Route>
       </Routes>

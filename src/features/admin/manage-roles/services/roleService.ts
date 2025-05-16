@@ -1,5 +1,6 @@
 import axiosInstance from "@/services/axios"
 import { Role, RoleCreateRequest, RoleUpdateRequest } from "@/features/admin/manage-roles/types/role";
+
 export const getAllRoles = async (page: number, size: number) => {
     const response = await axiosInstance.get("/Role/get-all", {
         params: {
