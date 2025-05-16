@@ -24,6 +24,9 @@ export const ManageRankPage = () => {
   const handleEdit = (rank: Rank) => {
     navigate(ROUTERS.ADMIN.rank.edit(rank.id))
   }
+  const handleShow = (rank: Rank) => {
+    navigate(ROUTERS.ADMIN.rank.show(rank.id))
+  }
 
   /* const handleDelete = async (role: Role) => {
     if (window.confirm(`Are you sure you want to delete ${role.roleName}?`)) {
@@ -45,6 +48,7 @@ export const ManageRankPage = () => {
       <RankTable
         data={ranks}
         onEdit={handleEdit}
+        onShow={handleShow}
         /* onDelete={handleDelete} */
         pagination={{
           pageIndex: page,

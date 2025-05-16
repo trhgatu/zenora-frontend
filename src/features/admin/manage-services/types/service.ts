@@ -9,3 +9,10 @@ export interface Service {
   createdTime: string;
   lastUpdatedTime: string;
 }
+export interface ServiceCreateRequest {
+  serviceName: string,
+  description: string,
+  price: number,
+  duration: number
+  isAvailable: boolean;
+}

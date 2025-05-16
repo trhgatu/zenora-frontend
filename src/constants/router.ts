@@ -26,6 +26,7 @@ const ROUTERS = {
             root: "/admin/ranks",
             create: "/admin/ranks/create",
             edit: (id: string) => `/admin/ranks/edit/${id}`,
+            show: (id: string) => `/admin/ranks/detail/${id}`,
         },
         payment: {
             root: "/admin/payments",

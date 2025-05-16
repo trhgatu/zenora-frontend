@@ -1,3 +1,4 @@
+import { ServiceCreateRequest } from "@/features/admin/manage-services/types/service";
 import axiosInstance from "@/services/axios";
 
 export const getAllServices = async (page: number, size: number) => {
@@ -7,5 +8,10 @@ export const getAllServices = async (page: number, size: number) => {
             pageSize: size,
         },
     });
-    return response.data.data
+    return response.data.data;
+}
+
+export const createService = async (data: ServiceCreateRequest) => {
+    const response = await axiosInstance.post("/Service/create", data)
+    return response.data;
 }

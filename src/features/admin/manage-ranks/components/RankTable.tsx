@@ -15,6 +15,7 @@ interface RankTableProps {
   data: Rank[];
   onEdit?: (rank: Rank) => void;
   onDelete?: (rank: Rank) => void;
+  onShow?: (rank: Rank) => void;
   pagination?: {
     pageIndex: number;
     pageCount: number;
@@ -26,6 +27,7 @@ export const RankTable: React.FC<RankTableProps> = ({
   data,
   onEdit,
   onDelete,
+  onShow,
   pagination,
 }) => {
   const columns: ColumnDef<Rank>[] = [
@@ -50,6 +52,9 @@ export const RankTable: React.FC<RankTableProps> = ({
       header: "Actions",
       cell: ({ row }) => (
         <div className="flex gap-2">
+          <Button size="sm" variant="outline" onClick={() => onShow?.(row.original)}>
+            Show
+          </Button>
           <Button size="sm" variant="outline" onClick={() => onEdit?.(row.original)}>
             Edit
           </Button>
