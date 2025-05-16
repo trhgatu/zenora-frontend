@@ -13,6 +13,7 @@ const ROUTERS = {
     ADMIN: {
         root: "/admin",
         user: "/admin/users",
+        catergory: "/admin/categories",
         dashboard: "/admin/dashboard",
         facility: "/admin/facilities",
         promotion: "/admin/promotions",
