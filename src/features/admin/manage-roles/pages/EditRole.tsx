@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { useNavigate, useParams } from "react-router-dom";
 import { getRoleById, updateRole } from "../services/roleService";
 import { toast } from "sonner";
+import { Flex, Spin } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 import BackButton from "@/components/BackButton";
 
 const schema = z.object({
@@ -64,9 +66,9 @@ export const EditRolePage = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <p className="text-gray-500 text-sm">Đang tải dữ liệu...</p>
-      </div>
+      <Flex align="center" gap="middle">
+        <Spin indicator={<LoadingOutlined spin />} size="large" />
+      </Flex>
     );
   }
 
