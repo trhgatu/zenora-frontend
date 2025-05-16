@@ -22,6 +22,11 @@ const ROUTERS = {
             create: "/admin/services/create",
             edit: (id: string) => `/admin/services/edit/${id}`,
         },
+        rank: {
+            root: "/admin/ranks",
+            create: "/admin/ranks/create",
+            edit: (id: string) => `/admin/ranks/edit/${id}`,
+        },
         category: "/admin/categories",
         dashboard: "/admin/dashboard",
         facility: {

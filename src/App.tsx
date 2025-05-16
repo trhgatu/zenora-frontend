@@ -13,6 +13,7 @@ import { ManageCategoryPage } from '@/features/admin/manage-categories/pages'
 import { CreateUserPage, EditUserPage, ManageUserPage } from '@/features/admin/manage-users/pages'
 import { ManageServicePage } from '@/features/admin/manage-services/pages/ManageService'
 import { CreateServicePage, EditServicePage } from '@/features/admin/manage-services/pages'
+import { CreateRankPage, EditRankPage, ManageRankPage } from '@/features/admin/manage-ranks/pages'
 
 function App() {
   return (
@@ -36,6 +37,11 @@ function App() {
             <Route index element={<ManageUserPage />} />
             <Route path="create" element={<CreateUserPage />} />
             <Route path="edit/:id" element={<EditUserPage />} />
+          </Route>
+          <Route path="ranks">
+            <Route index element={<ManageRankPage />} />
+            <Route path="create" element={<CreateRankPage />} />
+            <Route path="edit/:id" element={<EditRankPage />} />
           </Route>
           <Route path="services">
             <Route index element={<ManageServicePage />} />

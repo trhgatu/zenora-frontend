@@ -52,6 +52,11 @@ const data = {
       icon: IconUsers,
     },
     {
+      title: "Quản lý Ranks",
+      url: ROUTERS.ADMIN.rank.root,
+      icon: IconUsers,
+    },
+    {
       title: "Quản lý dịch vụ",
       url: ROUTERS.ADMIN.service.root,
       icon: IconFolder,
