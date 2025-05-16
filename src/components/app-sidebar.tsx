@@ -1,7 +1,6 @@
 import ROUTERS from "@/constants/router"
 import * as React from "react"
 import {
-  IconChartBar,
   IconDashboard,
   IconFolder,
   IconHelp,
@@ -38,7 +37,7 @@ const data = {
     },
     {
       title: "Quản lý cơ sở",
-      url: ROUTERS.ADMIN.facility,
+      url: ROUTERS.ADMIN.facility.root,
       icon: IconListDetails,
     },
     {
@@ -49,8 +48,13 @@ const data = {
 
     {
       title: "Quản lý người dùng",
-      url: ROUTERS.ADMIN.user,
-      icon: IconChartBar,
+      url: ROUTERS.ADMIN.user.root,
+      icon: IconUsers,
+    },
+    {
+      title: "Quản lý dịch vụ",
+      url: ROUTERS.ADMIN.service.root,
+      icon: IconFolder,
     },
     {
       title: "Quản lý ưu đãi",
@@ -59,6 +63,11 @@ const data = {
     },
     {
       title: "Quản lý vai trò",
+      url: ROUTERS.ADMIN.role.root,
+      icon: IconUsers,
+    },
+    {
+      title: "Quản lý thanh toán",
       url: ROUTERS.ADMIN.role.root,
       icon: IconUsers,
     },

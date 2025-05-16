@@ -1,7 +1,7 @@
 import axiosInstance from "@/services/axios";
 
-export const getAllUsers = async (page: number, size: number) => {
-    const response = await axiosInstance.get("/Location/get-all", {
+export const getAllServices = async (page: number, size: number) => {
+    const response = await axiosInstance.get("/Service/get-all", {
         params: {
             pageNumber: page,
             pageSize: size,

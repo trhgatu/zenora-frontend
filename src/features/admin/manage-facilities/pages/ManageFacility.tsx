@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+/* import { useState, useEffect } from "react"
 import { DataTable } from "@/components/data-table";
 import { getAllFacilities } from "@/features/admin/manage-facilities/services/facilityServices";
 
@@ -35,3 +35,4 @@ export default function ManageFacilityPage() {
     </div>
   )
 }
+ */

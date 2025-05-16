@@ -1,28 +1,28 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button";
-import { getAllUsers } from "@/features/admin/manage-users/services/userServices"
-import { User } from "@/features/admin/manage-users/types/user";
-import { UserTable } from "@/features/admin/manage-users/components/UserTable";
+import { ServiceTable } from "@/features/admin/manage-services/components/ServiceTable";
 import { useNavigate } from "react-router-dom";
 import ROUTERS from "@/constants/router";
+import { Service } from "@/features/admin/manage-services/types/service";
+import { getAllServices } from "@/features/admin/manage-services/services/serviceServices";
 
-export const ManageUserPage = () => {
+export const ManageServicePage = () => {
   const navigate = useNavigate();
-  const [users, setUsers] = useState<User[]>([])
+  const [services, setServices] = useState<Service[]>([])
   const [page, setPage] = useState(0)
   const [pageCount, setPageCount] = useState(1)
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      const res = await getAllUsers(page + 1, 10)
-      setUsers(res.items)
+    const fetchServices = async () => {
+      const res = await getAllServices(page + 1, 10)
+      setServices(res.items)
       setPageCount(res.totalPages)
     };
-    fetchUsers();
+    fetchServices();
   }, [page]);
 
-  const handleEdit = (user: User) => {
-    navigate(ROUTERS.ADMIN.user.edit(user.id))
+  const handleEdit = (service: Service) => {
+    navigate(ROUTERS.ADMIN.user.edit(service.id))
   }
 
   /* const handleDelete = async (role: Role) => {
@@ -35,21 +35,23 @@ export const ManageUserPage = () => {
     <div className="p-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-semibold">
-          Users Management
+          Services Management
         </h2>
-        <Button onClick={() => navigate(ROUTERS.ADMIN.user.create)}>
-          Create user
+        <Button onClick={() => navigate(ROUTERS.ADMIN.service.create)}>
+          Create Service
         </Button>
       </div>
-      <UserTable
-        data={users}
+      <ServiceTable
+        data={services}
         onEdit={handleEdit}
+        /* onDelete={handleDeleteService} */
         pagination={{
           pageIndex: page,
-          pageCount: pageCount,
+          pageCount:pageCount,
           onPageChange: setPage,
         }}
       />
+
     </div>
   )
 }

@@ -6,12 +6,13 @@ import { LoginPage, RegisterPage } from '@/features/user/auth/pages'
 import { AdminLayout, MainLayout } from '@/layouts'
 import ROUTERS from '@/constants/router'
 import ScrollToTop from '@/components/ScrollToTop'
-import ManageFacilityPage from '@/features/admin/manage-facilities/pages/ManageFacility'
-import ManageUserPage from '@/features/admin/manage-users/pages/ManageUser'
+/* import ManageFacilityPage from '@/features/admin/manage-facilities/pages/ManageFacility' */
 import ManagePromotionPage from '@/features/admin/manage-promotions/pages/ManagePromotion'
 import { CreateRolePage, EditRolePage, ManageRolePage } from '@/features/admin/manage-roles/pages'
 import { ManageCategoryPage } from '@/features/admin/manage-categories/pages'
-import { EditUserPage } from '@/features/admin/manage-users/pages/EditUser'
+import { CreateUserPage, EditUserPage, ManageUserPage } from '@/features/admin/manage-users/pages'
+import { ManageServicePage } from '@/features/admin/manage-services/pages/ManageService'
+import { CreateServicePage, EditServicePage } from '@/features/admin/manage-services/pages'
 
 function App() {
   return (
@@ -28,13 +29,18 @@ function App() {
         <Route path={ROUTERS.ADMIN.root} element={<AdminLayout />}>
           <Route index element={<Navigate to={ROUTERS.ADMIN.dashboard} replace />} />
           <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="facilities" element={<ManageFacilityPage />} />
+          {/* <Route path="facilities" element={<ManageFacilityPage />} /> */}
           <Route path="categories" element={<ManageCategoryPage />} />
           <Route path="promotions" element={<ManagePromotionPage />} />
           <Route path="users">
             <Route index element={<ManageUserPage />} />
-            {/* <Route path="create" element={<CreateUserPage />} /> */}
+            <Route path="create" element={<CreateUserPage />} />
             <Route path="edit/:id" element={<EditUserPage />} />
+          </Route>
+          <Route path="services">
+            <Route index element={<ManageServicePage />} />
+            <Route path="create" element={<CreateServicePage />} />
+            <Route path="edit/:id" element={<EditServicePage />} />
           </Route>
           <Route path="roles">
             <Route index element={<ManageRolePage />} />
