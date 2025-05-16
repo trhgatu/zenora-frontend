@@ -3,6 +3,8 @@ import CategorySection from "../components/CategorySection";
 import FacilitySection from "../components/FacilitySection";
 import PromotionSection from "../components/PromotionSection";
 import SearchBar from "@/features/home/components/SearchBar";
+import ServiceSection from "../components/ServiceSection"; 
+
 
 const HomePage = () => {
   return (
@@ -21,6 +23,11 @@ const HomePage = () => {
           <section className="md:py-12 bg-white">
             <PromotionSection />
 
+          </section>
+
+          <section className="py-6 md:py-6">
+            <ServiceSection 
+            />
           </section>
 
           <section className="py-6 md:py-6">

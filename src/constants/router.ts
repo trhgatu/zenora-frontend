@@ -1,8 +1,10 @@
 const ROUTERS = {
     USER: {
         home: "/",
+        about: "/about",
         login: "/login",
         register: "/register",
+        terms: "/terms",
         facility: "/facility",
         booking: "/booking",
         facilityDetail: "/facility/:id",

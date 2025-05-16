@@ -105,7 +105,7 @@ const Footer = () => {
 
         <div className="border-t border-gray-700 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 text-sm">© 2023 Zenora. Tất cả quyền được bảo lưu.</p>
+            <p className="text-gray-400 text-sm">© 2025 Zenora. Tất cả quyền được bảo lưu.</p>
             <div className="mt-4 md:mt-0">
               <ul className="flex space-x-6 text-sm">
                 <li><Link to="/terms" className="text-gray-400 hover:text-white transition-colors">Điều khoản sử dụng</Link></li>

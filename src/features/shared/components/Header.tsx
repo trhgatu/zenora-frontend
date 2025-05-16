@@ -1,10 +1,53 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FaUser, FaBars, FaTimes, FaHeart, FaBell, FaBookmark } from 'react-icons/fa';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '@/store/authSlice';
+import ROUTERS from '@/constants/router';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const user = useSelector((state) => state.auth.user);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  // Chuẩn hóa pathname
+  const currentPath = (location.pathname || '/').replace(/\/+$/, '').toLowerCase();
+
+  // Debug: Log để kiểm tra giá trị pathname và trạng thái đăng nhập
+  useEffect(() => {
+    console.log('Current pathname:', currentPath);
+    console.log('Is authenticated:', isAuthenticated);
+    console.log('User:', user);
+  }, [currentPath, isAuthenticated, user]);
+
+  const navItems = [
+    { name: 'Trang chủ', path: '/' },
+    { name: 'Danh mục', path: '/categories' },
+    { name: 'Khuyến mãi', path: '/promotion' },
+    { name: 'Giới thiệu', path: '/about' },
+  ];
+
+  const getActivePath = () => {
+    const matchedItem = navItems.find(item => item.path.toLowerCase() === currentPath);
+    return matchedItem ? matchedItem.path : '/';
+  };
+
+  const activePath = getActivePath();
+
+  const handleLogout = () => {
+    dispatch(logout()); // Dispatch action logout để cập nhật Redux store
+    setIsUserMenuOpen(false); // Đóng dropdown menu ngay lập tức
+    setIsMenuOpen(false); // Đóng menu mobile nếu đang mở
+    // Chỉ chuyển hướng nếu không phải đang ở trang không yêu cầu đăng nhập
+    const publicPaths = [ROUTERS.USER.login, ROUTERS.USER.register, ROUTERS.USER.terms, '/', '/about', '/booking', '/categories', '/promotion'];
+    if (!publicPaths.includes(currentPath)) {
+      navigate(ROUTERS.USER.login);
+    }
+  };
 
   return (
     <header className="bg-white shadow-md sticky top-0 z-50">
@@ -19,18 +62,19 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:ml-6 md:flex md:space-x-8">
-            <Link to="/" className="inline-flex items-center px-1 pt-1 border-b-2 border-blue-500 text-sm font-medium text-gray-900">
-              Trang chủ
-            </Link>
-            <Link to="/categories" className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
-              Danh mục
-            </Link>
-            <Link to="/promotion" className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
-              Khuyến mãi
-            </Link>
-            <Link to="/about" className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
-              Giới thiệu
-            </Link>
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                  activePath === item.path
+                    ? 'border-blue-500 text-gray-900'
+                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                }`}
+              >
+                {item.name}
+              </Link>
+            ))}
           </nav>
 
           {/* User Menu - Desktop */}
@@ -50,21 +94,37 @@ const Header = () => {
 
               {isUserMenuOpen && (
                 <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                  <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    Tài khoản của tôi
-                  </Link>
-                  <Link to="/bookmarks" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    <FaBookmark className="mr-2" /> Đã lưu
-                  </Link>
-                  <Link to="/favorites" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    <FaHeart className="mr-2" /> Yêu thích
-                  </Link>
-                  <Link to="/notifications" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    <FaBell className="mr-2" /> Thông báo
-                  </Link>
-                  <Link to="/login" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    Đăng xuất
-                  </Link>
+                  {isAuthenticated ? (
+                    <>
+                      <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        Tài khoản của tôi
+                      </Link>
+                      <Link to="/bookmarks" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <FaBookmark className="mr-2" /> Đã lưu
+                      </Link>
+                      <Link to="/favorites" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <FaHeart className="mr-2" /> Yêu thích
+                      </Link>
+                      <Link to="/notifications" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <FaBell className="mr-2" /> Thông báo
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Đăng xuất
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link to="/login" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        Đăng nhập
+                      </Link>
+                      <Link to="/register" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        Đăng ký
+                      </Link>
+                    </>
+                  )}
                 </div>
               )}
             </div>
@@ -87,18 +147,19 @@ const Header = () => {
       {isMenuOpen && (
         <div className="md:hidden">
           <div className="pt-2 pb-3 space-y-1">
-            <Link to="/" className="bg-blue-50 border-blue-500 text-blue-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
-              Trang chủ
-            </Link>
-            <Link to="/categories" className="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
-              Danh mục
-            </Link>
-            <Link to="/promotion" className="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
-              Khuyến mãi
-            </Link>
-            <Link to="/about" className="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
-              Giới thiệu
-            </Link>
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
+                  activePath === item.path
+                    ? 'bg-blue-50 border-blue-500 text-blue-700'
+                    : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'
+                }`}
+              >
+                {item.name}
+              </Link>
+            ))}
           </div>
           <div className="pt-4 pb-3 border-t border-gray-200">
             <div className="flex items-center px-4">
@@ -108,26 +169,42 @@ const Header = () => {
                 </div>
               </div>
               <div className="ml-3">
-                <div className="text-base font-medium text-gray-800">Người dùng</div>
-                <div className="text-sm font-medium text-gray-500">user@example.com</div>
+                <div className="text-base font-medium text-gray-800">{isAuthenticated && user ? user.name : 'Khách'}</div>
+                {isAuthenticated && user && <div className="text-sm font-medium text-gray-500">{user.email}</div>}
               </div>
             </div>
             <div className="mt-3 space-y-1">
-              <Link to="/profile" className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
-                Tài khoản của tôi
-              </Link>
-              <Link to="/bookmarks" className="flex items-center px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
-                <FaBookmark className="mr-2" /> Đã lưu
-              </Link>
-              <Link to="/favorites" className="flex items-center px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
-                <FaHeart className="mr-2" /> Yêu thích
-              </Link>
-              <Link to="/notifications" className="flex items-center px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
-                <FaBell className="mr-2" /> Thông báo
-              </Link>
-              <Link to="/login" className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
-                Đăng xuất
-              </Link>
+              {isAuthenticated ? (
+                <>
+                  <Link to="/profile" className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
+                    Tài khoản của tôi
+                  </Link>
+                  <Link to="/bookmarks" className="flex items-center px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
+                    <FaBookmark className="mr-2" /> Đã lưu
+                  </Link>
+                  <Link to="/favorites" className="flex items-center px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
+                    <FaHeart className="mr-2" /> Yêu thích
+                  </Link>
+                  <Link to="/notifications" className="flex items-center px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
+                    <FaBell className="mr-2" /> Thông báo
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                  >
+                    Đăng xuất
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link to="/login" className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
+                    Đăng nhập
+                  </Link>
+                  <Link to="/register" className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
+                    Đăng ký
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>

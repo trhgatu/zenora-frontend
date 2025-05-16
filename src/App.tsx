@@ -1,10 +1,11 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { MainLayout } from '@/layouts/MainLayout';
 import HomePage from '@/features/home/pages/HomePage';
+import AboutPage  from './features/about/pages/AboutPage';
 import FacilityDetailPage from '@/features/facility/pages/FacilityDetailPage';
 import DashboardPage from '@/features/admin/pages/Dashboard';
 import FacilityManagePage from '@/features/admin/pages/FacilityManage';
-import { LoginPage, RegisterPage } from '@/features/auth/pages';
+import { LoginPage, RegisterPage, TermsPage } from '@/features/auth/pages';
 import { AdminLayout } from '@/layouts/AdminLayout';
 import ROUTERS from '@/constants/router';
 import BookingPage from './features/booking/pages/BookingPage';
@@ -16,8 +17,10 @@ function App() {
         <Route path={ROUTERS.USER.home} element={<MainLayout />}>
           <Route index element={<HomePage />} />
           <Route path={ROUTERS.USER.facilityDetail.replace(':id', ':id')} element={<FacilityDetailPage />} />
+           <Route path={ROUTERS.USER.about} element={<AboutPage />} />
           <Route path={ROUTERS.USER.login} element={<LoginPage />} />
           <Route path={ROUTERS.USER.register} element={<RegisterPage />} />
+          <Route path={ROUTERS.USER.terms } element={<TermsPage/>} />
           <Route path={ROUTERS.USER.booking} element={<BookingPage/>} />
         </Route>
 
