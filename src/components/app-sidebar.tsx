@@ -42,7 +42,7 @@ const data = {
     },
     {
       title: "Quản lý danh mục",
-      url: ROUTERS.ADMIN.category,
+      url: ROUTERS.ADMIN.category.root,
       icon: IconListDetails,
     },
 

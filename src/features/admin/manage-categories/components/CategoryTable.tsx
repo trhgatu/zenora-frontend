@@ -1,11 +1,12 @@
 import * as React from "react";
-import { User } from "@/features/admin/manage-users/types/user";
 import {
   ColumnDef,
   getCoreRowModel,
   useReactTable,
   flexRender,
 } from "@tanstack/react-table";
+import { ServiceCategory } from "@/types/category";
+
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -16,10 +17,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-interface UserTableProps {
-  data: User[];
-  onEdit?: (user: User) => void;
-  onDelete?: (user: User) => void;
+interface CategoryTableProps {
+  data: ServiceCategory[];
+  onEdit?: (category: ServiceCategory) => void;
+  onDelete?: (category: ServiceCategory) => void;
+  onShow?: (category: ServiceCategory) => void;
   pagination?: {
     pageIndex: number;
     pageCount: number;
@@ -27,16 +29,18 @@ interface UserTableProps {
   };
 }
 
-export const UserTable: React.FC<UserTableProps> = ({
+export const CategoryTable: React.FC<CategoryTableProps> = ({
   data,
   onEdit,
   onDelete,
+  onShow,
   pagination,
 }) => {
-  const columns: ColumnDef<User>[] = [
-    { accessorKey: "fullName", header: "Họ tên" },
-    { accessorKey: "email", header: "Email" },
-    { accessorKey: "roleName", header: "Vai trò" },
+  const columns: ColumnDef<ServiceCategory>[] = [
+    {
+      accessorKey: "categoryName",
+      header: "Tên danh mục",
+    },
     {
       accessorKey: "isActive",
       header: "Active",
@@ -44,24 +48,31 @@ export const UserTable: React.FC<UserTableProps> = ({
     },
     {
       accessorKey: "createdTime",
-      header: "Created At",
-      cell: ({ row }) =>
-        new Date(row.original.createdTime).toLocaleDateString(),
+      header: "Thời gian tạo",
+      cell: ({ row }) => new Date(row.original.createdTime).toLocaleString(),
+    },
+    {
+      accessorKey: "lastUpdatedTime",
+      header: "Thời gian cập nhật",
+      cell: ({ row }) => new Date(row.original.lastUpdatedTime).toLocaleString(),
     },
     {
       id: "actions",
-      header: "Hành động",
+      header: "Thao tác",
       cell: ({ row }) => (
         <div className="flex gap-2">
+          <Button size="sm" variant="outline" onClick={() => onShow?.(row.original)}>
+            Show
+          </Button>
           <Button size="sm" variant="outline" onClick={() => onEdit?.(row.original)}>
-            Sửa
+            Edit
           </Button>
           <Button
             size="sm"
             variant="destructive"
             onClick={() => onDelete?.(row.original)}
           >
-            Xóa
+            Delete
           </Button>
         </div>
       ),
@@ -102,7 +113,7 @@ export const UserTable: React.FC<UserTableProps> = ({
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="text-center">
-                No users found.
+                No categories found.
               </TableCell>
             </TableRow>
           )}
@@ -110,9 +121,9 @@ export const UserTable: React.FC<UserTableProps> = ({
       </Table>
 
       {pagination && (
-        <div className="flex justify-center items-center gap-4 p-4">
-          <span className="text-base">
-            Trang {pagination.pageIndex + 1} / {pagination.pageCount}
+        <div className="flex justify-end items-center gap-4 p-4">
+          <span>
+            Page {pagination.pageIndex + 1} of {pagination.pageCount}
           </span>
           <Button
             variant="outline"
@@ -120,7 +131,7 @@ export const UserTable: React.FC<UserTableProps> = ({
             onClick={() => pagination.onPageChange(pagination.pageIndex - 1)}
             disabled={pagination.pageIndex <= 0}
           >
-            Trước
+            Previous
           </Button>
           <Button
             variant="outline"
@@ -128,7 +139,7 @@ export const UserTable: React.FC<UserTableProps> = ({
             onClick={() => pagination.onPageChange(pagination.pageIndex + 1)}
             disabled={pagination.pageIndex >= pagination.pageCount - 1}
           >
-            Sau
+            Next
           </Button>
         </div>
       )}

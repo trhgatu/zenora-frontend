@@ -1,15 +1,4 @@
 const ROUTERS = {
-    USER: {
-        home: "/",
-        login: "/login",
-        register: "/register",
-        facility: "/facility",
-        facilityDetail: "/facility/:id",
-        serviceProvider: "/dang-ky-co-so-lam-dep",
-        appointment: "/dat-lich",
-        confirmAppointment: "/xac-nhan-dat-lich",
-        profile: "/thong-tin-ca-nhan",
-    },
     ADMIN: {
         root: "/admin",
         auth: {
@@ -37,7 +26,10 @@ const ROUTERS = {
             create: "/admin/payments/create",
             edit: (id: string) => `/admin/payments/edit/${id}`,
         },
-        category: "/admin/categories",
+        category: {
+            root: "/admin/categories",
+            create: "/admin/categories/create"
+        },
         dashboard: "/admin/dashboard",
         facility: {
             root: "/admin/facilities",
