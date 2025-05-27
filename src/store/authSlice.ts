@@ -1,8 +1,7 @@
-// src/store/authSlice.ts
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '@/services/axios';
 import { jwtDecode } from 'jwt-decode';
-import { AxiosError } from 'axios';
+import axios, { AxiosError } from 'axios';
 
 interface User {
   _id: string;
@@ -29,10 +28,17 @@ interface JwtPayload {
   ["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"]: string;
   ["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"]: string;
   ["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]: string;
+  exp?: number;
 }
 
 interface ErrorResponse {
-  message: string;
+  data?: any;
+  additionalData?: any;
+  message?: string;
+  statusCode?: number;
+  code?: string;
+  detail?: string;
+  errors?: any;
 }
 
 const initialState: AuthState = {
@@ -55,20 +61,40 @@ const extractUserFromToken = (token: string): User => {
   };
 };
 
+const isTokenExpired = (token: string): boolean => {
+  try {
+    const decoded = jwtDecode<JwtPayload>(token);
+    const currentTime = Math.floor(Date.now() / 1000);
+    return decoded.exp ? decoded.exp < currentTime : false;
+  } catch {
+    return true;
+  }
+};
+
 export const restoreAuth = createAsyncThunk<
   AuthResponse,
   void,
   { rejectValue: string }
 >('auth/restoreAuth', async (_, { rejectWithValue }) => {
   try {
-    const token = localStorage.getItem('token');
-    if (!token) throw new Error('No token found');
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      return rejectWithValue('');
+    }
+
+    if (isTokenExpired(token)) {
+      throw new Error('Token đã hết hạn');
+    }
 
     const user = extractUserFromToken(token);
+    if (user.role !== 'Provider') {
+      throw new Error('Tài khoản này không phải là Provider');
+    }
+
     return { user, token };
   } catch (error) {
-    const axiosError = error as AxiosError<ErrorResponse>;
-    return rejectWithValue(axiosError.response?.data?.message || 'Failed to restore auth');
+    localStorage.removeItem('accessToken');
+    return rejectWithValue((error instanceof Error ? error.message : 'Không thể khôi phục trạng thái đăng nhập'));
   }
 });
 
@@ -78,15 +104,83 @@ export const login = createAsyncThunk<
   { rejectValue: string }
 >('auth/login', async ({ email, password }, { rejectWithValue }) => {
   try {
-    const response = await axiosInstance.post('/Auth/sign-in', { email, password });
-    const token = response.data.data.accessToken;
-    const user = extractUserFromToken(token);
+    console.log('Sending login request:', { email, password });
+    const response = await axiosInstance.post('/api/Auth/sign-in', { email, password });
+    console.log('Login response:', response.data);
 
-    localStorage.setItem('token', token);
+    if (!response.data.statusCode || response.data.statusCode !== 200) {
+      let errorMessage = 'Đăng nhập thất bại';
+      if (typeof response.data === 'string') {
+        errorMessage = response.data;
+      } else if (response.data.message) {
+        errorMessage = response.data.message;
+      } else if (response.data.detail) {
+        errorMessage = response.data.detail;
+      } else if (response.data.errors) {
+        errorMessage = typeof response.data.errors === 'string' 
+          ? response.data.errors 
+          : JSON.stringify(response.data.errors);
+      }
+      throw new Error(errorMessage);
+    }
+
+    const token = response.data.data?.accessToken;
+    if (!token) {
+      throw new Error('Không nhận được token từ server');
+    }
+
+    const user = extractUserFromToken(token);
+    if (user.role !== 'Provider') {
+      throw new Error('Tài khoản này không phải là Provider');
+    }
+
+    localStorage.setItem('accessToken', token);
     return { user, token };
-  } catch (error) {
-    const axiosError = error as AxiosError<ErrorResponse>;
-    return rejectWithValue(axiosError.response?.data?.message || 'Login failed');
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<ErrorResponse>;
+      console.error('Login error:', axiosError.response?.data);
+      console.error('Full error object:', axiosError);
+
+      let errorMessage = 'Đăng nhập thất bại';
+      if (axiosError.response?.data) {
+        if (typeof axiosError.response.data === 'string') {
+          errorMessage = axiosError.response.data;
+        } else if (axiosError.response.data.message) {
+          errorMessage = axiosError.response.data.message;
+        } else if (axiosError.response.data.detail) {
+          errorMessage = axiosError.response.data.detail;
+        } else if (axiosError.response.data.errors) {
+          errorMessage = typeof axiosError.response.data.errors === 'string' 
+            ? axiosError.response.data.errors 
+            : JSON.stringify(axiosError.response.data.errors);
+        } else if (axiosError.response.statusText) {
+          errorMessage = axiosError.response.statusText;
+        } else {
+          errorMessage = 'Lỗi không xác định từ server';
+        }
+      } else if (axiosError.message) {
+        errorMessage = axiosError.message;
+      } else {
+        errorMessage = 'Lỗi không xác định';
+      }
+
+      if (axiosError.response?.status === 500) {
+        return rejectWithValue('Có lỗi xảy ra trên server. Vui lòng thử lại sau hoặc liên hệ quản trị viên.');
+      }
+      if (axiosError.response?.status === 403) {
+        return rejectWithValue('Trang API hiện đang bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.');
+      }
+      if (axiosError.response?.status === 401 || axiosError.response?.status === 400) {
+        return rejectWithValue(errorMessage);
+      }
+      if (axiosError.code === 'ERR_NETWORK') {
+        return rejectWithValue('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng hoặc thử lại sau.');
+      }
+      return rejectWithValue(errorMessage);
+    } else {
+      return rejectWithValue(error instanceof Error ? error.message : 'Lỗi không xác định');
+    }
   }
 });
 
@@ -96,11 +190,82 @@ export const register = createAsyncThunk<
   { rejectValue: string }
 >('auth/register', async ({ name, email, password }, { rejectWithValue }) => {
   try {
-    const response = await axiosInstance.post('/auth/register', { name, email, password });
-    return response.data as AuthResponse;
-  } catch (error) {
-    const axiosError = error as AxiosError<ErrorResponse>;
-    return rejectWithValue(axiosError.response?.data?.message || 'Registration failed');
+    console.log('Sending register request:', { name, email, password });
+    const response = await axiosInstance.post('/api/Auth/register', { name, email, password });
+    console.log('Register response:', response.data);
+
+    if (!response.data.statusCode || response.data.statusCode !== 200) {
+      let errorMessage = 'Đăng ký thất bại';
+      if (typeof response.data === 'string') {
+        errorMessage = response.data;
+      } else if (response.data.message) {
+        errorMessage = response.data.message;
+      } else if (response.data.detail) {
+        errorMessage = response.data.detail;
+      } else if (response.data.errors) {
+        errorMessage = typeof response.data.errors === 'string' 
+          ? response.data.errors 
+          : JSON.stringify(response.data.errors);
+      }
+      throw new Error(errorMessage);
+    }
+    const token = response.data.data?.accessToken;
+    if (!token) {
+      throw new Error('Không nhận được token từ server');
+    }
+    const user = extractUserFromToken(token);
+
+    if (user.role !== 'Provider') {
+      throw new Error('Tài khoản này không phải là Provider');
+    }
+
+    localStorage.setItem('accessToken', token);
+    return { user, token };
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<ErrorResponse>;
+      console.error('Register error:', axiosError.response?.data);
+      console.error('Full error object:', axiosError);
+
+      let errorMessage = 'Đăng ký thất bại';
+      if (axiosError.response?.data) {
+        if (typeof axiosError.response.data === 'string') {
+          errorMessage = axiosError.response.data;
+        } else if (axiosError.response.data.message) {
+          errorMessage = axiosError.response.data.message;
+        } else if (axiosError.response.data.detail) {
+          errorMessage = axiosError.response.data.detail;
+        } else if (axiosError.response.data.errors) {
+          errorMessage = typeof axiosError.response.data.errors === 'string' 
+            ? axiosError.response.data.errors 
+            : JSON.stringify(axiosError.response.data.errors);
+        } else if (axiosError.response.statusText) {
+          errorMessage = axiosError.response.statusText;
+        } else {
+          errorMessage = 'Lỗi không xác định từ server';
+        }
+      } else if (axiosError.message) {
+        errorMessage = axiosError.message;
+      } else {
+        errorMessage = 'Lỗi không xác định';
+      }
+
+      if (axiosError.response?.status === 500) {
+        return rejectWithValue('Có lỗi xảy ra trên server. Vui lòng thử lại sau hoặc liên hệ quản trị viên.');
+      }
+      if (axiosError.response?.status === 403) {
+        return rejectWithValue('Trang API hiện đang bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.');
+      }
+      if (axiosError.response?.status === 400) {
+        return rejectWithValue(errorMessage);
+      }
+      if (axiosError.code === 'ERR_NETWORK') {
+        return rejectWithValue('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng hoặc thử lại sau.');
+      }
+      return rejectWithValue(errorMessage);
+    } else {
+      return rejectWithValue(error instanceof Error ? error.message : 'Lỗi không xác định');
+    }
   }
 });
 
@@ -112,7 +277,11 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.user = null;
       state.token = null;
-      localStorage.removeItem('token');
+      state.error = null;
+      localStorage.removeItem('accessToken');
+    },
+    clearError: (state) => {
+      state.error = null;
     },
   },
   extraReducers: (builder) => {
@@ -128,13 +297,13 @@ const authSlice = createSlice({
         state.token = action.payload.token;
         state.isInitialized = true;
       })
-      .addCase(restoreAuth.rejected, (state) => {
+      .addCase(restoreAuth.rejected, (state, action) => {
         state.loading = false;
         state.isAuthenticated = false;
         state.user = null;
         state.token = null;
         state.isInitialized = true;
-        localStorage.removeItem('token');
+        state.error = action.payload || null;
       })
       .addCase(login.pending, (state) => {
         state.loading = true;
@@ -148,7 +317,7 @@ const authSlice = createSlice({
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Login failed';
+        state.error = action.payload || 'Đăng nhập thất bại';
       })
       .addCase(register.pending, (state) => {
         state.loading = true;
@@ -162,10 +331,10 @@ const authSlice = createSlice({
       })
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Registration failed';
+        state.error = action.payload || 'Đăng ký thất bại';
       });
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, clearError } = authSlice.actions;
 export default authSlice.reducer;
