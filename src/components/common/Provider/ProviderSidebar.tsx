@@ -9,8 +9,9 @@ const ProviderSidebar: React.FC = () => {
     { label: 'Quản lý khuyến mãi', path: '/provider/promotions' },
     { label: 'Quản lý thông tin thợ', path: '/provider/staff' },
     { label: 'Quản lý hình ảnh', path: '/provider/images' },
+    { label: 'Thông tin cơ sở', path: '/provider/manager-provider'},
+    
   ];
-
   return (
     <aside className="w-64 h-full bg-white shadow-lg p-6">
       <nav className="flex flex-col space-y-4">

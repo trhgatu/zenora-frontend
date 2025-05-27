@@ -54,7 +54,10 @@ const ROUTERS = {
     service: {
       create: 'service/create',
     },
-    manage: 'manage',
+    manager:{
+        managerProvider: 'manager-provider',
+        manage:'manage',
+    } 
   },
 
 }
