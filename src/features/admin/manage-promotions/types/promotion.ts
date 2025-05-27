@@ -20,5 +20,4 @@ export interface CreatePromotionRequest {
     startDate: string;
     endDate: string;
     rankIds: string[];
-
 }

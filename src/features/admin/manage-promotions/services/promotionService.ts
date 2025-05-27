@@ -31,3 +31,7 @@ export const createPromotion = async (data: CreatePromotionRequest) => {
     const response = await axiosInstance.post("/PromotionAdmin/create", data);
     return response.data;
 }
+export const updatePromotion = async (data: CreatePromotionRequest) => {
+    const response = await axiosInstance.put(`/PromotionAdmin/update`, data);
+    return response.data;
+}
