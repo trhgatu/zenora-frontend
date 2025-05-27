@@ -17,8 +17,9 @@
   import { restoreAuth } from '@/store/authSlice'
   import { CreateUserPage, EditUserPage, ManageUserPage } from '@/features/admin/manage-users/pages'
   import { CreateCategoryPage } from '@/features/admin/manage-categories/pages/CreateCategory'
-
+  import 'react-toastify/dist/ReactToastify.css'
   import ProviderLayout from '@/layouts/ProviderLayout'
+  import { ToastContainer } from 'react-toastify';
   // import ProviderLoginPage from '../src/features/provider/pages/ProviderLoginPage'
   // import ProviderDashboard from '../src/features/provider/pages/ProviderDashboard'
   // import ProviderServices from '../src/features/provider/pages/ProviderServices'
@@ -28,6 +29,7 @@
   import ProviderServices from '@/features/provider/pages/ProviderServices';
   import CreateService from '@/features/provider/pages/CreateService';
   import ProviderManage from '@/features/provider/pages/ProviderManage';
+  import ServiceProviderInformation from '@/features/provider/pages/ServiceProviderInformation';
   import ProviderPromotions from '@/features/provider/pages/ProviderPromotions';
   import ProviderStaff from '@/features/provider/pages/ProviderStaff';
   import ProviderImages from '@/features/provider/pages/ProviderImages';  
@@ -101,7 +103,7 @@
             <Route index element={<ProviderDashboard />} />
             <Route path={ROUTERS.PROVIDER.services} element={<ProviderServices />} />
             <Route path={ROUTERS.PROVIDER.service.create} element={<CreateService />} />
-            <Route path={ROUTERS.PROVIDER.manage} element={<ProviderManage />} />
+            <Route path={ROUTERS.PROVIDER.manager.managerProvider} element={<ServiceProviderInformation />} />
             <Route path="promotions" element={<ProviderPromotions />} />
             <Route path="staff" element={<ProviderStaff />} />
             <Route path="images" element={<ProviderImages />} />
@@ -109,6 +111,17 @@
         </Route>
                 
         </Routes>
+        <ToastContainer 
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </Router>
     )
   }
