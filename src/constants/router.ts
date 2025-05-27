@@ -36,7 +36,12 @@ const ROUTERS = {
             create: "/admin/facilities/create",
             edit: (id: string) => `/admin/facilities/edit/${id}`,
         },
-        promotion: "/admin/promotions",
+        promotion: {
+            root: "/admin/promotions",
+            create: "/admin/promotions/create",
+            edit: (id: string) => `/admin/promotions/edit/${id}`,
+            show: (id: string) => `/admin/promotions/detail/${id}`,
+        },
         role: {
             root: "/admin/roles",
             create: "/admin/roles/create",

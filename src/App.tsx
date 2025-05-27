@@ -4,7 +4,7 @@ import DashboardPage from '@/features/admin/dashboard/pages/Dashboard'
 import { AdminLayout } from '@/layouts'
 import ROUTERS from '@/constants/router'
 import ScrollToTop from '@/components/ScrollToTop'
-import ManagePromotionPage from '@/features/admin/manage-promotions/pages/ManagePromotion'
+import { ManagePromotionPage, DetailPromotionPage } from '@/features/admin/manage-promotions/pages'
 import { CreateRolePage, DetailRolePage, EditRolePage, ManageRolePage } from '@/features/admin/manage-roles/pages'
 import { ManageCategoryPage } from '@/features/admin/manage-categories/pages'
 import { ManageServicePage } from '@/features/admin/manage-services/pages/ManageService'
@@ -44,12 +44,15 @@ function App() {
             <Route index element={<Navigate to={ROUTERS.ADMIN.dashboard} replace />} />
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="categories" element={<ManageCategoryPage />} />
-            <Route path="promotions" element={<ManagePromotionPage />} />
             <Route path="ranks">
               <Route index element={<ManageRankPage />} />
               <Route path="create" element={<CreateRankPage />} />
               <Route path="edit/:id" element={<EditRankPage />} />
               <Route path="detail/:id" element={<DetailRankPage />} />
+            </Route>
+            <Route path="promotions">
+              <Route index element={<ManagePromotionPage />} />
+              <Route path="detail/:id" element={<DetailPromotionPage />} />
             </Route>
             <Route path="services">
               <Route index element={<ManageServicePage />} />

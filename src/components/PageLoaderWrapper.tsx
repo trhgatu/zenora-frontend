@@ -6,6 +6,7 @@ type PageLoaderWrapperProps = {
   loading: boolean;
   tip?: string;
   children: ReactNode;
+  fullscreen?: boolean;
 };
 
 const PageLoaderWrapper = ({ loading, tip = "Đang tải dữ liệu...", children }: PageLoaderWrapperProps) => {

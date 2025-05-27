@@ -27,23 +27,23 @@ export const ManageRolePage = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-  const fetchRoles = async () => {
-    setLoading(true);
+    const fetchRoles = async () => {
+      setLoading(true);
 
-    try {
-      const res = await getAllRoles(page + 1, 10);
-      setRoles(res.items);
-      setPageCount(res.totalPages);
-      setLoading(false)
-    } catch (err) {
-      console.error(err)
-      toast.error("Không thể tải danh sách vai trò.");
-      setLoading(false);
-    }
-  };
+      try {
+        const res = await getAllRoles(page + 1, 10);
+        setRoles(res.items);
+        setPageCount(res.totalPages);
+        setLoading(false)
+      } catch (err) {
+        console.error(err)
+        toast.error("Không thể tải danh sách vai trò.");
+        setLoading(false);
+      }
+    };
 
-  fetchRoles();
-}, [page]);
+    fetchRoles();
+  }, [page]);
 
   const handleEdit = (role: Role) => navigate(ROUTERS.ADMIN.role.edit(role.id));
   const handleShow = (role: Role) => navigate(ROUTERS.ADMIN.role.show(role.id));

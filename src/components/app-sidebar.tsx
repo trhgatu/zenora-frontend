@@ -52,6 +52,11 @@ const data = {
       icon: IconUsers,
     },
     {
+      title: "Quản lý vai trò",
+      url: ROUTERS.ADMIN.role.root,
+      icon: IconUsers,
+    },
+    {
       title: "Quản lý Ranks",
       url: ROUTERS.ADMIN.rank.root,
       icon: IconUsers,
@@ -62,14 +67,9 @@ const data = {
       icon: IconFolder,
     },
     {
-      title: "Quản lý ưu đãi",
-      url: ROUTERS.ADMIN.promotion,
+      title: "Quản lý khuyến mãi",
+      url: ROUTERS.ADMIN.promotion.root,
       icon: IconFolder,
-    },
-    {
-      title: "Quản lý vai trò",
-      url: ROUTERS.ADMIN.role.root,
-      icon: IconUsers,
     },
     {
       title: "Quản lý thanh toán",
