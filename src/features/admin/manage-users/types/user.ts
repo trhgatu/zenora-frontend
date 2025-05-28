@@ -7,6 +7,10 @@ export interface User {
   gender: string | null;
   address: string;
   dateOfBirth: string;
+  addressDetail: string | null;
+  departmentId: string | null;
+  provinceName: string | null;
+  districtName: string | null;
   avatarUrl: string | null;
   isActive: boolean;
   roleName: string;

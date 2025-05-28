@@ -8,6 +8,7 @@ const ROUTERS = {
         user: {
             root: "/admin/users",
             create: "/admin/users/create",
+            show: (id: string) => `/admin/users/detail/${id}`,
             edit: (id: string) => `/admin/users/edit/${id}`,
         },
         service: {

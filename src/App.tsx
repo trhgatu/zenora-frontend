@@ -14,7 +14,7 @@ import PrivateRoute from '@/routes/PrivateRoute'
 import { AdminLoginPage } from '@/features/admin/auth/page'
 import { useAppDispatch, useAppSelector } from '@/hooks'
 import { restoreAuth } from '@/store/authSlice'
-import { CreateUserPage, EditUserPage, ManageUserPage } from '@/features/admin/manage-users/pages'
+import { CreateUserPage, DetailUserPage, EditUserPage, ManageUserPage } from '@/features/admin/manage-users/pages'
 import { CreateCategoryPage } from '@/features/admin/manage-categories/pages/CreateCategory'
 
 function App() {
@@ -71,6 +71,7 @@ function App() {
               <Route index element={<ManageUserPage />} />
               <Route path="create" element={<CreateUserPage />} />
               <Route path="edit/:id" element={<EditUserPage />} />
+              <Route path="detail/:id" element={<DetailUserPage />} />
             </Route>
             <Route path="categories">
               <Route index element={<ManageCategoryPage />} />

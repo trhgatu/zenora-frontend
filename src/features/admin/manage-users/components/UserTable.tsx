@@ -20,6 +20,7 @@ interface UserTableProps {
   data: User[];
   onEdit?: (user: User) => void;
   onDelete?: (user: User) => void;
+  onShow?: (user: User) => void;
   pagination?: {
     pageIndex: number;
     pageCount: number;
@@ -30,6 +31,7 @@ interface UserTableProps {
 export const UserTable: React.FC<UserTableProps> = ({
   data,
   onEdit,
+  onShow,
   onDelete,
   pagination,
 }) => {
@@ -55,6 +57,9 @@ export const UserTable: React.FC<UserTableProps> = ({
         <div className="flex gap-2">
           <Button size="sm" variant="outline" onClick={() => onEdit?.(row.original)}>
             Sửa
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => onShow?.(row.original)}>
+            Xem
           </Button>
           <Button
             size="sm"

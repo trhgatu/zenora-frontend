@@ -9,3 +9,8 @@ export const getAllUsers = async (page: number, size: number) => {
     });
     return response.data.data
 }
+
+export const getUserById = async (id: string) => {
+    const response = await axiosInstance.get(`/User/${id}`);
+    return response.data.data;
+}

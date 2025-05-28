@@ -1,3 +1,3 @@
 export * from './ManagePromotion'
-export * from './DetailPromotionPage'
-export * from './EditPromotionPage'
+export * from './DetailPromotion'
+export * from './EditPromotion'
