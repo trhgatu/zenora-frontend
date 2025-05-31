@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,7 @@ const ProviderLoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
+
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { error, loading, isAuthenticated } = useAppSelector(state => state.auth);
@@ -26,7 +27,6 @@ const ProviderLoginPage = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      // Chuyển hướng đến trang chủ Provider (/provider) sau khi đăng nhập thành công
       navigate('/provider', { replace: true });
     }
   }, [isAuthenticated, navigate]);
@@ -93,6 +93,14 @@ const ProviderLoginPage = () => {
         <Button type="submit" className="w-full" disabled={loading}>
           {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
         </Button>
+        <div className="text-center mt-4">
+          <p className="text-sm text-gray-600">
+            Chưa có tài khoản?{' '}
+            <Link to="/provider/register" className="text-blue-500 hover:underline">
+              Đăng ký
+            </Link>
+          </p>
+        </div>
       </form>
     </div>
   );

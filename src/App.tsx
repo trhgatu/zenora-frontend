@@ -19,19 +19,18 @@
   import { CreateCategoryPage } from '@/features/admin/manage-categories/pages/CreateCategory'
 
   import ProviderLayout from '@/layouts/ProviderLayout'
-  // import ProviderLoginPage from '../src/features/provider/pages/ProviderLoginPage'
-  // import ProviderDashboard from '../src/features/provider/pages/ProviderDashboard'
-  // import ProviderServices from '../src/features/provider/pages/ProviderServices'
-  // import CreateService from './features/provider/pages/CreateService'
   import ProviderLoginPage from '@/features/provider/pages/ProviderLoginPage';
   import ProviderDashboard from '@/features/provider/pages/ProviderDashboard';
   import ProviderServices from '@/features/provider/pages/ProviderServices';
-  import CreateService from '@/features/provider/pages/CreateService';
   import ProviderManage from '@/features/provider/pages/ProviderManage';
   import ProviderPromotions from '@/features/provider/pages/ProviderPromotions';
+  import ProviderFlashSales from '@/features/provider/pages/ProviderFlashSales';
   import ProviderStaff from '@/features/provider/pages/ProviderStaff';
   import ProviderImages from '@/features/provider/pages/ProviderImages';  
-
+  import ProviderMessages from '@/features/provider/pages/ProviderMessages';
+  import ProviderRegisterPage from '@/features/provider/pages/ProviderRegisterPage';
+  import ProviderWorkingHour from '@/features/provider/pages/ProviderWorkingHour';
+ import ProviderSpaLocation from '@/features/provider/pages/ProviderSpaLocation';
 
 
   function App() {
@@ -94,17 +93,22 @@
 
  {/* Route đăng nhập Provider */}
         <Route path={ROUTERS.PROVIDER.auth.login} element={<ProviderLoginPage />} />
+        
+        <Route path="/provider/register" element={<ProviderRegisterPage />} />
 
         {/* Route cho Provider (bảo vệ bằng PrivateProviderRoute) */}
         <Route path={ROUTERS.PROVIDER.root} element={<PrivateProviderRoute />}>
           <Route element={<ProviderLayout />}>
             <Route index element={<ProviderDashboard />} />
             <Route path={ROUTERS.PROVIDER.services} element={<ProviderServices />} />
-            <Route path={ROUTERS.PROVIDER.service.create} element={<CreateService />} />
             <Route path={ROUTERS.PROVIDER.manage} element={<ProviderManage />} />
             <Route path="promotions" element={<ProviderPromotions />} />
+            <Route path="flashsales" element={<ProviderFlashSales />} />
             <Route path="staff" element={<ProviderStaff />} />
             <Route path="images" element={<ProviderImages />} />
+            <Route path="working-hours" element={<ProviderWorkingHour />} />
+            <Route path="spa-location" element={<ProviderSpaLocation />} />
+            <Route path="messages" element={<ProviderMessages />} />
           </Route>
         </Route>
                 
