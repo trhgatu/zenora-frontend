@@ -5,26 +5,7 @@ import { getAllCategories, softDeleteCategoryById } from "@/features/admin/manag
 import ROUTERS from "@/constants/router";
 import { Button } from "@/components/ui/button";
 import PageLoaderWrapper from "@/components/PageLoaderWrapper";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogAction,
-  AlertDialogDescription,
-  AlertDialogTitle,
-  AlertDialogFooter,
-  AlertDialogCancel
-} from "@/components/ui/alert-dialog";
-/* import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-  AlertDialogTitle,
-  AlertDialogDescription,
-} from "@/components/ui/alert-dialog"; */
+import { ConfirmDeleteDialog } from "@/components/ConfirmDeleteDialog";
 import { toast } from "sonner";
 import { ServiceCategory } from "@/types/category";
 
@@ -91,20 +72,12 @@ export const ManageCategoryPage = () => {
           }}
         />
 
-        <AlertDialog open={!!categoryToDelete} onOpenChange={(open) => !open && setCategoryToDelete(null)}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Xác nhận xoá</AlertDialogTitle>
-              <AlertDialogDescription>
-                Bạn có chắc chắn muốn xoá danh mục <strong>{categoryToDelete?.categoryName}</strong> không? Hành động này không thể hoàn tác.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Huỷ</AlertDialogCancel>
-              <AlertDialogAction onClick={confirmDelete}>Xoá</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <ConfirmDeleteDialog
+          open={!!categoryToDelete}
+          itemName={categoryToDelete?.categoryName || ""}
+          onCancel={() => setCategoryToDelete(null)}
+          onConfirm={confirmDelete}
+        />
       </div>
     </PageLoaderWrapper>
   );

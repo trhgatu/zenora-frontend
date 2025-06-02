@@ -62,17 +62,17 @@ export const CategoryTable: React.FC<CategoryTableProps> = ({
       cell: ({ row }) => (
         <div className="flex gap-2">
           <Button size="sm" variant="outline" onClick={() => onShow?.(row.original)}>
-            Show
+            Xem
           </Button>
           <Button size="sm" variant="outline" onClick={() => onEdit?.(row.original)}>
-            Edit
+            Sửa
           </Button>
           <Button
             size="sm"
             variant="destructive"
             onClick={() => onDelete?.(row.original)}
           >
-            Delete
+            Xóa
           </Button>
         </div>
       ),

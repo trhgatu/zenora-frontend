@@ -6,16 +6,7 @@ import { Role } from "@/features/admin/manage-roles/types/role";
 import ROUTERS from "@/constants/router";
 import { Button } from "@/components/ui/button";
 import PageLoaderWrapper from "@/components/PageLoaderWrapper";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-  AlertDialogTitle,
-  AlertDialogDescription,
-} from "@/components/ui/alert-dialog";
+import { ConfirmDeleteDialog } from "@/components/ConfirmDeleteDialog";
 import { toast } from "sonner";
 
 export const ManageRolePage = () => {
@@ -53,9 +44,9 @@ export const ManageRolePage = () => {
       try {
         await deleteRoleById(roleToDelete.id);
         setRoles((prev) => prev.filter((r) => r.id !== roleToDelete.id));
-        toast.success("Role deleted successfully");
+        toast.success("Xóa vai trò thành công");
       } catch {
-        toast.error("Failed to delete role");
+        toast.error("Có lỗi xảy ra khi xóa vai trò");
       } finally {
         setRoleToDelete(null);
       }
@@ -82,20 +73,14 @@ export const ManageRolePage = () => {
           }}
         />
 
-        <AlertDialog open={!!roleToDelete} onOpenChange={(open) => !open && setRoleToDelete(null)}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Xác nhận xoá</AlertDialogTitle>
-              <AlertDialogDescription>
-                Bạn có chắc chắn muốn xoá vai trò <strong>{roleToDelete?.roleName}</strong> không? Hành động này không thể hoàn tác.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Huỷ</AlertDialogCancel>
-              <AlertDialogAction onClick={confirmDelete}>Xoá</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <ConfirmDeleteDialog
+          open={!!roleToDelete}
+          itemName={roleToDelete?.roleName || ""}
+          onCancel={() => setRoleToDelete(null)}
+          onConfirm={confirmDelete}
+        />
+
+
       </div>
     </PageLoaderWrapper>
   );
