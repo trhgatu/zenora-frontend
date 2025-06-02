@@ -4,9 +4,10 @@ import { RankTable } from "@/features/admin/manage-ranks/components/RankTable"
 import { Rank } from "@/features/admin/manage-ranks/types/rank"
 import ROUTERS from "@/constants/router"
 import { Button } from "@/components/ui/button"
-import { getAllRanks } from "@/features/admin/manage-ranks/services/rankService"
+import { deleteRankById, getAllRanks } from "@/features/admin/manage-ranks/services/rankService"
 import PageLoaderWrapper from "@/components/PageLoaderWrapper"
 import { toast } from "sonner"
+import { ConfirmDeleteDialog } from "@/components/ConfirmDeleteDialog"
 
 export const ManageRankPage = () => {
   const navigate = useNavigate()
@@ -14,6 +15,7 @@ export const ManageRankPage = () => {
   const [page, setPage] = useState(0)
   const [pageCount, setPageCount] = useState(1)
   const [loading, setLoading] = useState(false);
+  const [rankToDelete, setRankToDelete] = useState<Rank | null>(null);
 
   useEffect(() => {
     const fetchRanks = async () => {
@@ -41,6 +43,19 @@ export const ManageRankPage = () => {
   const handleShow = (rank: Rank) => {
     navigate(ROUTERS.ADMIN.rank.show(rank.id))
   }
+  const confirmDelete = async () => {
+    if (rankToDelete) {
+      try {
+        await deleteRankById(rankToDelete.id);
+        setRanks((prev) => prev.filter((r) => r.id !== rankToDelete.id));
+        toast.success("Xóa cấp bậc thành công");
+      } catch {
+        toast.error("Xóa cấp bậc thất bại")
+      } finally {
+        setRankToDelete(null);
+      }
+    }
+  }
 
   /* const handleDelete = async (role: Role) => {
     if (window.confirm(`Are you sure you want to delete ${role.roleName}?`)) {
@@ -64,7 +79,7 @@ export const ManageRankPage = () => {
           data={ranks}
           onEdit={handleEdit}
           onShow={handleShow}
-          /* onDelete={handleDelete} */
+          onDelete={(rank) => setRankToDelete(rank)}
           pagination={{
             pageIndex: page,
             pageCount: pageCount,
@@ -72,6 +87,12 @@ export const ManageRankPage = () => {
           }}
         />
       </div>
+      <ConfirmDeleteDialog
+        open={!!rankToDelete}
+        itemName={rankToDelete?.name || ""}
+        onCancel={() => setRankToDelete(null)}
+        onConfirm={confirmDelete}
+      />
     </PageLoaderWrapper>
 
   )

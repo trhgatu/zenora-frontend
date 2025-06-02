@@ -51,5 +51,13 @@ const ROUTERS = {
         },
 
     },
+    PROVIDER: {
+        root: "/provider",
+        auth: {
+          root: "/provider/auth",
+          login : "/provider/auth/login"
+        },
+        dashboard: "/provider/dashboard"
+    }
 }
 export default ROUTERS;
