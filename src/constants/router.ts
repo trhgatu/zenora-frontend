@@ -29,7 +29,9 @@ const ROUTERS = {
         },
         category: {
             root: "/admin/categories",
-            create: "/admin/categories/create"
+            create: "/admin/categories/create",
+            show: (id: string) => `/admin/categories/detail/${id}`,
+            edit: (id: string) => `/admin/categories/edit/${id}`,
         },
         dashboard: "/admin/dashboard",
         facility: {
