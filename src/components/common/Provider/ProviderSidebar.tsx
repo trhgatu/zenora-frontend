@@ -12,7 +12,7 @@ const ProviderSidebar: React.FC = () => {
       label: 'Quản lý khuyến mãi',
       subItems: [
         { label: 'Quản lý Promotion', path: '/provider/promotions' },
-        { label: 'Quản lý Flash Sale', path: '/provider/flashsales' },
+        { label: 'Quản lý Flash Sale', path: '/provider/flash-sales' },
       ],
     },
     { label: 'Quản lý thông tin thợ', path: '/provider/staff' },

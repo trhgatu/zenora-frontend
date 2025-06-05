@@ -8,27 +8,23 @@ import axiosInstance from '@/services/axios';
 import axios, { AxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-// Định nghĩa kiểu dữ liệu từ Esgoo API
-interface EsgooResponse<T> {
-  error: number;
-  error_text: string;
-  data: T[];
+// Định nghĩa kiểu dữ liệu từ API Open API VN
+interface OpenApiProvince {
+  code: number;
+  name: string;
+  division_type: string;
 }
 
-interface Province {
-  id: string;
-  full_name: string;
-  postalCode?: string;
+interface OpenApiDistrict {
+  code: number;
+  name: string;
+  province_code: number;
 }
 
-interface District {
-  id: string;
-  full_name: string;
-}
-
-interface Ward {
-  id: string;
-  full_name: string;
+interface OpenApiProvinceResponse {
+  code: number;
+  name: string;
+  districts: OpenApiDistrict[];
 }
 
 interface WorkingHour {
@@ -92,17 +88,16 @@ const ProviderSpaLocation = () => {
     districtId: '',
   });
 
-  const [provinces, setProvinces] = useState<Province[]>([]);
-  const [districts, setDistricts] = useState<District[]>([]);
-  const [wards, setWards] = useState<Ward[]>([]);
+  const [provinces, setProvinces] = useState<OpenApiProvince[]>([]);
+  const [districts, setDistricts] = useState<OpenApiDistrict[]>([]);
 
-  // Dữ liệu tỉnh mặc định nếu API không hoạt động
-  const defaultProvinces: Province[] = [
-    { id: "01", full_name: "Hà Nội", postalCode: "100000" },
-    { id: "79", full_name: "Hồ Chí Minh", postalCode: "700000" },
-    { id: "48", full_name: "Đà Nẵng", postalCode: "550000" },
-    { id: "31", full_name: "Hải Phòng", postalCode: "180000" },
-    { id: "92", full_name: "Cần Thơ", postalCode: "900000" },
+  // Dữ liệu tỉnh mặc định nếu API lỗi
+  const backupProvinces: OpenApiProvince[] = [
+    { code: 1, name: 'Hà Nội', division_type: 'Thành phố' },
+    { code: 79, name: 'Hồ Chí Minh', division_type: 'Thành phố' },
+    { code: 48, name: 'Đà Nẵng', division_type: 'Thành phố' },
+    { code: 31, name: 'Hải Phòng', division_type: 'Thành phố' },
+    { code: 92, name: 'Cần Thơ', division_type: 'Thành phố' },
   ];
 
   useEffect(() => {
@@ -114,6 +109,8 @@ const ProviderSpaLocation = () => {
 
     if (user._id) {
       setProviderId(user._id);
+      console.log('Khởi tạo providerId:', user._id);
+      fetchProvinces();
     } else {
       setError('Không tìm thấy thông tin nhà cung cấp từ tài khoản. Vui lòng đăng nhập lại.');
       setTimeout(() => navigate('/provider/login'), 2000);
@@ -122,97 +119,53 @@ const ProviderSpaLocation = () => {
 
   const fetchProvinces = async () => {
     try {
-      const response = await axios.get<EsgooResponse<Province>>('https://esgoo.net/api-tinhthanh/4/0.htm');
+      const response = await axios.get<OpenApiProvince[]>('https://provinces.open-api.vn/api/p/');
       if (response.status !== 200) {
-        throw new Error('Lỗi khi lấy danh sách tỉnh từ Esgoo API: Phản hồi không thành công');
+        throw new Error('Lỗi khi lấy danh sách tỉnh từ API');
       }
 
-      const responseData = response.data;
-      if (responseData.error !== 0) {
-        throw new Error(responseData.error_text || 'Lỗi khi lấy danh sách tỉnh từ API');
-      }
-
-      const fetchedProvinces = responseData.data || [];
+      const fetchedProvinces = response.data || [];
       if (fetchedProvinces.length === 0) {
         throw new Error('Danh sách tỉnh trả về rỗng');
       }
 
-      const provincesWithPostalCode = fetchedProvinces.map((province, index) => ({
-        ...province,
-        postalCode: `10${index.toString().padStart(3, '0')}`,
-      }));
-      setProvinces(provincesWithPostalCode);
-      if (provincesWithPostalCode.length > 0 && viewMode === 'create') {
-        setNewBranchData((prev) => ({
-          ...prev,
-          provinceId: provincesWithPostalCode[0].id,
-          city: provincesWithPostalCode[0].full_name,
-          postalCode: provincesWithPostalCode[0].postalCode || '',
-        }));
-      }
+      console.log('Danh sách tỉnh:', fetchedProvinces);
+      setProvinces(fetchedProvinces);
     } catch (err) {
-      console.error('Error fetching provinces:', err);
+      console.error('Lỗi khi lấy tỉnh:', err);
       setError('Không thể lấy danh sách tỉnh từ API. Sử dụng dữ liệu mặc định.');
-      // Sử dụng dữ liệu mặc định nếu API thất bại
-      setProvinces(defaultProvinces);
-      if (defaultProvinces.length > 0 && viewMode === 'create') {
-        setNewBranchData((prev) => ({
-          ...prev,
-          provinceId: defaultProvinces[0].id,
-          city: defaultProvinces[0].full_name,
-          postalCode: defaultProvinces[0].postalCode || '',
-        }));
-      }
+      setProvinces(backupProvinces);
     }
   };
 
   const fetchDistricts = async (selectedProvinceId: string) => {
     try {
-      const response = await axios.get<EsgooResponse<District>>(
-        `https://esgoo.net/api-tinhthanh/2/${selectedProvinceId}.htm`
+      const response = await axios.get<OpenApiProvinceResponse>(
+        `https://provinces.open-api.vn/api/p/${selectedProvinceId}?depth=2`
       );
       if (response.status !== 200) {
-        throw new Error('Lỗi khi lấy danh sách quận từ Esgoo API');
+        throw new Error('Lỗi khi lấy danh sách quận từ API');
       }
 
-      const responseData = response.data;
-      if (responseData.error !== 0) {
-        throw new Error(responseData.error_text || 'Lỗi khi lấy danh sách quận');
-      }
-
-      const fetchedDistricts = responseData.data || [];
+      const fetchedDistricts = response.data.districts || [];
+      console.log(`Danh sách quận cho tỉnh ${selectedProvinceId}:`, fetchedDistricts);
       setDistricts(fetchedDistricts);
-      if (fetchedDistricts.length > 0 && viewMode === 'create') {
-        setNewBranchData((prev) => ({ ...prev, districtId: fetchedDistricts[0].id, district: fetchedDistricts[0].full_name }));
+      if (viewMode === 'create' && fetchedDistricts.length > 0) {
+        const defaultDistrict = fetchedDistricts[0];
+        setNewBranchData(prev => ({
+          ...prev,
+          districtId: defaultDistrict.code.toString(),
+          district: defaultDistrict.name,
+          postalCode: `${selectedProvinceId.padStart(2, '0')}${defaultDistrict.code.toString().padStart(4, '0')}`,
+        }));
       }
     } catch (err) {
-      console.error('Error fetching districts:', err);
-      setError('Không thể lấy danh sách quận. Vui lòng thử lại sau.');
-    }
-  };
-
-  const fetchWards = async (selectedDistrictId: string) => {
-    try {
-      const response = await axios.get<EsgooResponse<Ward>>(
-        `https://esgoo.net/api-tinhthanh/3/${selectedDistrictId}.htm`
-      );
-      if (response.status !== 200) {
-        throw new Error('Lỗi khi lấy danh sách phường/xã từ Esgoo API');
+      console.error('Lỗi khi lấy quận:', err);
+      setError('Không thể lấy danh sách quận từ API.');
+      setDistricts([]);
+      if (viewMode === 'create') {
+        setNewBranchData(prev => ({ ...prev, districtId: '', district: '' }));
       }
-
-      const responseData = response.data;
-      if (responseData.error !== 0) {
-        throw new Error(responseData.error_text || 'Lỗi khi lấy danh sách phường/xã');
-      }
-
-      const fetchedWards = responseData.data || [];
-      setWards(fetchedWards);
-      if (fetchedWards.length > 0 && viewMode === 'create') {
-        setNewBranchData((prev) => ({ ...prev, wardId: fetchedWards[0].id }));
-      }
-    } catch (err) {
-      console.error('Error fetching wards:', err);
-      setError('Không thể lấy danh sách phường/xã. Vui lòng thử lại sau.');
     }
   };
 
@@ -223,14 +176,20 @@ const ProviderSpaLocation = () => {
       setSuccess(null);
 
       if (!token || !providerId) {
-        setError('Không tìm thấy thông tin nhà cung cấp.');
+        setError('Không tìm thấy thông tin nhà cung cấp hoặc token.');
+        console.error('Lỗi: Thiếu token hoặc providerId', { token, providerId });
         return;
       }
 
-      const response = await axiosInstance.get<ApiResponse<SpaBranchLocation[]>>(`/api/SpaBranchLocation/by-provider/${providerId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      console.log('Gửi yêu cầu lấy chi nhánh:', { providerId, token });
+      const response = await axiosInstance.get<ApiResponse<SpaBranchLocation[]>>(
+        `/api/SpaBranchLocation/by-provider/${providerId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
+      console.log('Phản hồi API chi nhánh:', response.data);
       if (response.status !== 200) {
         throw new Error('Lỗi khi lấy danh sách chi nhánh spa');
       }
@@ -240,10 +199,12 @@ const ProviderSpaLocation = () => {
       setFilteredBranches(fetchedBranches);
       if (fetchedBranches.length === 0) {
         setError('Không có chi nhánh nào được tìm thấy cho nhà cung cấp này.');
+        console.warn('Danh sách chi nhánh rỗng:', fetchedBranches);
       }
     } catch (err) {
       const axiosError = err as AxiosError<ErrorResponse>;
       let errorMessage = axiosError.response?.data?.message || 'Lỗi khi lấy danh sách chi nhánh spa';
+      console.error('Lỗi chi tiết:', axiosError.response?.data, axiosError.response?.status);
 
       if (axiosError.response?.status === 404) {
         setBranches([]);
@@ -258,7 +219,6 @@ const ProviderSpaLocation = () => {
         }
       }
       setError(errorMessage);
-      console.error('Lỗi khi lấy chi nhánh:', err);
     } finally {
       setLoading(false);
     }
@@ -270,9 +230,6 @@ const ProviderSpaLocation = () => {
 
     if (branch.provinceId) {
       fetchDistricts(branch.provinceId);
-      if (branch.districtId) {
-        fetchWards(branch.districtId);
-      }
     }
   };
 
@@ -321,10 +278,12 @@ const ProviderSpaLocation = () => {
         return;
       }
 
+      console.log('Gửi yêu cầu cập nhật chi nhánh:', payload);
       const response = await axiosInstance.put('/api/SpaBranchLocation/update', payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
+      console.log('Phản hồi cập nhật chi nhánh:', response.data);
       if (response.status !== 200) {
         throw new Error('Lỗi khi cập nhật chi nhánh spa');
       }
@@ -345,7 +304,7 @@ const ProviderSpaLocation = () => {
         }
       }
       setError(errorMessage);
-      console.error('Error updating branch:', axiosError);
+      console.error('Lỗi khi cập nhật chi nhánh:', axiosError);
     } finally {
       setLoading(false);
     }
@@ -392,10 +351,12 @@ const ProviderSpaLocation = () => {
         districtId: newBranchData.districtId,
       };
 
+      console.log('Gửi yêu cầu tạo chi nhánh:', payload);
       const response = await axiosInstance.post<SpaBranchLocation>('/api/SpaBranchLocation/create', payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
+      console.log('Phản hồi tạo chi nhánh:', response.data);
       if (response.status !== 200 && response.status !== 201) {
         throw new Error('Lỗi khi tạo chi nhánh spa');
       }
@@ -417,7 +378,7 @@ const ProviderSpaLocation = () => {
         }
       }
       setError(errorMessage);
-      console.error('Error creating branch:', axiosError);
+      console.error('Lỗi khi tạo chi nhánh:', axiosError);
     } finally {
       setLoading(false);
     }
@@ -435,10 +396,12 @@ const ProviderSpaLocation = () => {
         return;
       }
 
+      console.log('Gửi yêu cầu xóa chi nhánh:', { id });
       const response = await axiosInstance.delete(`/api/SpaBranchLocation/delete/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
+      console.log('Phản hồi xóa chi nhánh:', response.data);
       if (response.status !== 200) {
         throw new Error('Lỗi khi xóa chi nhánh spa');
       }
@@ -455,7 +418,7 @@ const ProviderSpaLocation = () => {
         errorMessage = 'Không tìm thấy chi nhánh để xóa. Vui lòng kiểm tra lại.';
       }
       setError(errorMessage);
-      console.error('Error deleting branch:', axiosError);
+      console.error('Lỗi khi xóa chi nhánh:', axiosError);
     } finally {
       setLoading(false);
     }
@@ -466,14 +429,16 @@ const ProviderSpaLocation = () => {
       branchName: '',
       street: '',
       district: '',
-      city: '',
-      postalCode: provinces.length > 0 ? provinces[0].postalCode || '' : '',
+      city: provinces.length > 0 ? provinces[0].name : '',
+      postalCode: provinces.length > 0 ? provinces[0].code.toString().padStart(6, '0') : '',
       country: 'Vietnam',
-      provinceId: provinces.length > 0 ? provinces[0].id : '',
+      provinceId: provinces.length > 0 ? provinces[0].code.toString() : '',
       districtId: '',
     });
     setDistricts([]);
-    setWards([]);
+    if (provinces.length > 0) {
+      fetchDistricts(provinces[0].code.toString());
+    }
   };
 
   const handleNewBranchInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -481,29 +446,29 @@ const ProviderSpaLocation = () => {
     setNewBranchData((prev) => ({ ...prev, [name]: value }));
 
     if (name === 'provinceId') {
-      const selectedProvince = provinces.find((province) => province.id === value);
+      const selectedProvince = provinces.find((province) => province.code.toString() === value);
       setNewBranchData((prev) => ({
         ...prev,
-        city: selectedProvince ? selectedProvince.full_name : '',
-        postalCode: selectedProvince ? selectedProvince.postalCode || '' : '',
+        city: selectedProvince ? selectedProvince.name : '',
+        postalCode: selectedProvince ? selectedProvince.code.toString().padStart(6, '0') : '',
         districtId: '',
         district: '',
       }));
       setDistricts([]);
-      setWards([]);
       if (value) {
+        console.log('Fetching districts for province:', value);
         fetchDistricts(value);
       }
     } else if (name === 'districtId') {
-      const selectedDistrict = districts.find((district) => district.id === value);
+      const selectedDistrict = districts.find((district) => district.code.toString() === value);
+      const postalCode = selectedDistrict
+        ? `${newBranchData.provinceId.padStart(2, '0')}${selectedDistrict.code.toString().padStart(4, '0')}`
+        : newBranchData.provinceId.padStart(6, '0');
       setNewBranchData((prev) => ({
         ...prev,
-        district: selectedDistrict ? selectedDistrict.full_name : '',
+        district: selectedDistrict ? selectedDistrict.name : '',
+        postalCode,
       }));
-      setWards([]);
-      if (value) {
-        fetchWards(value);
-      }
     }
   };
 
@@ -512,31 +477,30 @@ const ProviderSpaLocation = () => {
 
     const { name, value } = e.target;
     if (name === 'provinceId') {
-      const selectedProvince = provinces.find((province) => province.id === value);
+      const selectedProvince = provinces.find((province) => province.code.toString() === value);
       setEditingBranch({
         ...editingBranch,
         provinceId: value,
-        city: selectedProvince ? selectedProvince.full_name : '',
-        postalCode: selectedProvince ? selectedProvince.postalCode || '' : '',
+        city: selectedProvince ? selectedProvince.name : '',
+        postalCode: selectedProvince ? selectedProvince.code.toString().padStart(6, '0') : '',
         districtId: '',
         district: '',
       });
       setDistricts([]);
-      setWards([]);
       if (value) {
         fetchDistricts(value);
       }
     } else if (name === 'districtId') {
-      const selectedDistrict = districts.find((district) => district.id === value);
+      const selectedDistrict = districts.find((district) => district.code.toString() === value);
+      const postalCode = selectedDistrict
+        ? `${editingBranch.provinceId.padStart(2, '0')}${selectedDistrict.code.toString().padStart(4, '0')}`
+        : editingBranch.provinceId.padStart(6, '0');
       setEditingBranch({
         ...editingBranch,
         districtId: value,
-        district: selectedDistrict ? selectedDistrict.full_name : '',
+        district: selectedDistrict ? selectedDistrict.name : '',
+        postalCode,
       });
-      setWards([]);
-      if (value) {
-        fetchWards(value);
-      }
     } else {
       setEditingBranch({ ...editingBranch, [name]: value });
     }
@@ -556,11 +520,14 @@ const ProviderSpaLocation = () => {
 
   const formatWorkingHours = (workingHours: WorkingHour[] | undefined) => {
     if (!workingHours || workingHours.length === 0) return 'Không có giờ làm việc';
-    return workingHours.map((hour) => `${hour.dayOfWeek}: ${hour.openTime} - ${hour.closeTime}`).join('; ');
+    return workingHours
+      .map((hour) => `${hour.dayOfWeek}: ${hour.openTime} - ${hour.closeTime}`)
+      .join('; ');
   };
 
   useEffect(() => {
     if (providerId && token) {
+      console.log('Kích hoạt fetchBranches với:', { providerId, token });
       fetchBranches();
     }
   }, [providerId, token]);
@@ -630,15 +597,12 @@ const ProviderSpaLocation = () => {
                     className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   >
-                    {provinces.length === 0 ? (
-                      <option value="">Không có dữ liệu tỉnh</option>
-                    ) : (
-                      provinces.map((province) => (
-                        <option key={province.id} value={province.id}>
-                          {province.full_name}
-                        </option>
-                      ))
-                    )}
+                    <option value="">Chọn tỉnh/thành phố</option>
+                    {provinces.map((province) => (
+                      <option key={province.code} value={province.code.toString()}>
+                        {province.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div>
@@ -654,40 +618,26 @@ const ProviderSpaLocation = () => {
                     required
                     disabled={!newBranchData.provinceId}
                   >
-                    {districts.length === 0 ? (
-                      <option value="">Không có dữ liệu quận</option>
-                    ) : (
-                      districts.map((district) => (
-                        <option key={district.id} value={district.id}>
-                          {district.full_name}
-                        </option>
-                      ))
-                    )}
+                    <option value="">Chọn quận/huyện</option>
+                    {districts.map((district) => (
+                      <option key={district.code} value={district.code.toString()}>
+                        {district.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div>
                   <Label htmlFor="postalCode" className="text-sm font-medium text-gray-700">
                     Mã bưu điện
                   </Label>
-                  <select
+                  <Input
                     id="postalCode"
                     name="postalCode"
                     value={newBranchData.postalCode}
                     onChange={handleNewBranchInputChange}
-                    className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Nhập mã bưu điện"
                     required
-                    disabled={!newBranchData.provinceId}
-                  >
-                    {provinces.length === 0 ? (
-                      <option value="">Không có dữ liệu mã bưu điện</option>
-                    ) : (
-                      provinces.map((province) => (
-                        <option key={province.id} value={province.postalCode || ''}>
-                          {province.postalCode || 'Không có mã bưu điện'} - {province.full_name}
-                        </option>
-                      ))
-                    )}
-                  </select>
+                  />
                 </div>
               </div>
               <div>
@@ -779,15 +729,12 @@ const ProviderSpaLocation = () => {
                     className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   >
-                    {provinces.length === 0 ? (
-                      <option value="">Không có dữ liệu tỉnh</option>
-                    ) : (
-                      provinces.map((province) => (
-                        <option key={province.id} value={province.id}>
-                          {province.full_name}
-                        </option>
-                      ))
-                    )}
+                    <option value="">Chọn tỉnh/thành phố</option>
+                    {provinces.map((province) => (
+                      <option key={province.code} value={province.code.toString()}>
+                        {province.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div>
@@ -803,40 +750,26 @@ const ProviderSpaLocation = () => {
                     required
                     disabled={!editingBranch.provinceId}
                   >
-                    {districts.length === 0 ? (
-                      <option value="">Không có dữ liệu quận</option>
-                    ) : (
-                      districts.map((district) => (
-                        <option key={district.id} value={district.id}>
-                          {district.full_name}
-                        </option>
-                      ))
-                    )}
+                    <option value="">Chọn quận/huyện</option>
+                    {districts.map((district) => (
+                      <option key={district.code} value={district.code.toString()}>
+                        {district.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div>
                   <Label htmlFor="postalCode" className="text-sm font-medium text-gray-700">
                     Mã bưu điện
                   </Label>
-                  <select
+                  <Input
                     id="postalCode"
                     name="postalCode"
                     value={editingBranch.postalCode}
                     onChange={handleEditBranchInputChange}
-                    className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Nhập mã bưu điện"
                     required
-                    disabled={!editingBranch.provinceId}
-                  >
-                    {provinces.length === 0 ? (
-                      <option value="">Không có dữ liệu mã bưu điện</option>
-                    ) : (
-                      provinces.map((province) => (
-                        <option key={province.id} value={province.postalCode || ''}>
-                          {province.postalCode || 'Không có mã bưu điện'} - {province.full_name}
-                        </option>
-                      ))
-                    )}
-                  </select>
+                  />
                 </div>
               </div>
               <div>
@@ -920,7 +853,9 @@ const ProviderSpaLocation = () => {
                     {filteredBranches.map((branch) => (
                       <tr key={branch.id} className="hover:bg-gray-50">
                         <td className="border border-gray-200 px-4 py-2">{branch.branchName}</td>
-                        <td className="border border-gray-200 px-4 py-2">{branch.street}, {branch.district}</td>
+                        <td className="border border-gray-200 px-4 py-2">
+                          {branch.street}, {branch.district}
+                        </td>
                         <td className="border border-gray-200 px-4 py-2">{branch.city || branch.provinceName}</td>
                         <td className="border border-gray-200 px-4 py-2">{branch.districtName || branch.district}</td>
                         <td className="border border-gray-200 px-4 py-2">{branch.postalCode}</td>

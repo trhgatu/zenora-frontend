@@ -19,18 +19,26 @@
   import { CreateCategoryPage } from '@/features/admin/manage-categories/pages/CreateCategory'
 
   import ProviderLayout from '@/layouts/ProviderLayout'
-  import ProviderLoginPage from '@/features/provider/pages/ProviderLoginPage';
-  import ProviderDashboard from '@/features/provider/pages/ProviderDashboard';
-  import ProviderServices from '@/features/provider/pages/ProviderServices';
-  import ProviderManage from '@/features/provider/pages/ProviderManage';
-  import ProviderPromotions from '@/features/provider/pages/ProviderPromotions';
-  import ProviderFlashSales from '@/features/provider/pages/ProviderFlashSales';
-  import ProviderStaff from '@/features/provider/pages/ProviderStaff';
-  import ProviderImages from '@/features/provider/pages/ProviderImages';  
-  import ProviderMessages from '@/features/provider/pages/ProviderMessages';
-  import ProviderRegisterPage from '@/features/provider/pages/ProviderRegisterPage';
-  import ProviderWorkingHour from '@/features/provider/pages/ProviderWorkingHour';
- import ProviderSpaLocation from '@/features/provider/pages/ProviderSpaLocation';
+  import ProviderLoginPage from '@/features/provider/auth/pages/ProviderLoginPage';
+  import ProviderDashboard from '@/features/provider/dashboard/pages/ProviderDashboard';
+  import ProviderServices from '@/features/provider/manage-services/pages/ProviderServicesPage';
+  import CreateService from '@/features/provider/manage-services/pages/CreateServicePage';
+  import EditService from '@/features/provider/manage-services/pages/EditServicePage';
+  import ProviderManage from '@/features/provider/manage-account/pages/ProviderManage';
+  import ProviderPromotions from '@/features/provider/manage-promotions/pages/ProviderPromotions';
+  import CreatePromotionPage from '@/features/provider/manage-promotions/pages/CreatePromotionPage';
+  import EditPromotionPage from '@/features/provider/manage-promotions/pages/EditPromotionPage';
+  import ProviderFlashSales from '@/features/provider/manage-flash-sales/pages/ProviderFlashSales';
+  import CreateFlashSalePage from '@/features/provider/manage-flash-sales/pages/CreateFlashSalePage';
+  import EditFlashSalePage from '@/features/provider/manage-flash-sales/pages/EditFlashSalePage';
+  import ProviderStaff from '@/features/provider/manage-staff/pages/ProviderStaff';
+  import EditStaffPage from '@/features/provider/manage-staff/pages/EditStaffPage'
+  import CreateStaffPage from '@/features/provider/manage-staff/pages/CreateStaffPage'
+  import ProviderImages from '@/features/provider/manage-images/pages/ProviderImages';  
+  import ProviderMessages from '@/features/provider/manage-messages/pages/ProviderMessages';
+  import ProviderRegisterPage from '@/features/provider/auth/pages/ProviderRegisterPage';
+  import ProviderWorkingHour from '@/features/provider/manage-working-hours/pages/ProviderWorkingHour';
+  import ProviderSpaLocation from '@/features/provider/manage-branches/pages/ProviderSpaLocation';
 
 
   function App() {
@@ -101,10 +109,18 @@
           <Route element={<ProviderLayout />}>
             <Route index element={<ProviderDashboard />} />
             <Route path={ROUTERS.PROVIDER.services} element={<ProviderServices />} />
+            <Route path="/provider/services/create" element={<CreateService />} />
+            <Route path="/provider/services/edit/:id" element={<EditService />} />
             <Route path={ROUTERS.PROVIDER.manage} element={<ProviderManage />} />
             <Route path="promotions" element={<ProviderPromotions />} />
-            <Route path="flashsales" element={<ProviderFlashSales />} />
+            <Route path="/provider/promotions/create" element={<CreatePromotionPage />} />
+            <Route path="/provider/promotions/edit/:id" element={<EditPromotionPage />} />
+            <Route path="flash-sales" element={<ProviderFlashSales />} />
+            <Route path="/provider/flash-sales/create" element={<CreateFlashSalePage />} />
+            <Route path="/provider/flash-sales/edit/:id" element={<EditFlashSalePage />} />
             <Route path="staff" element={<ProviderStaff />} />
+            <Route path="/provider/staff/create" element={<CreateStaffPage />} />
+            <Route path="/provider/staff/edit/:id" element={<EditStaffPage />} />
             <Route path="images" element={<ProviderImages />} />
             <Route path="working-hours" element={<ProviderWorkingHour />} />
             <Route path="spa-location" element={<ProviderSpaLocation />} />

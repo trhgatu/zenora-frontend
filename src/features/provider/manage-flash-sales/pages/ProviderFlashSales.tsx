@@ -1,66 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import { useAppSelector } from '@/hooks';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import axiosInstance from '@/services/axios';
-import axios, { AxiosError } from 'axios';
-import { useNavigate, useLocation } from 'react-router-dom';
-
-interface FlashSale {
-  id: string;
-  serviceId: string;
-  discountPercent: number;
-  discountAmount: number;
-  quantity: number;
-  startDate: string;
-  endDate: string;
-  createdTime: string;
-  lastUpdatedTime: string;
-  deletedTime: string | null;
-}
-
-interface Service {
-  id: string;
-  serviceName: string;
-}
-
-interface ServiceProviderResponse {
-  id: string;
-  providerId: string;
-  businessName: string;
-  imageUrl: string;
-  description: string;
-}
-
-interface PaginatedResponse<T> {
-  items: T[];
-  totalItems: number;
-  currentPage: number;
-  totalPages: number;
-  pageSize: number;
-  hasPreviousPage: boolean;
-  hasNextPage: boolean;
-}
-
-interface ApiResponse<T> {
-  data: T;
-  additionalData: any;
-  message: string | null;
-  statusCode: number;
-  code: string;
-}
-
-interface ErrorResponse {
-  data?: any;
-  additionalData?: any;
-  message?: string;
-  statusCode?: number;
-  code?: string;
-  detail?: string;
-  errors?: any;
-}
+import { AxiosError } from 'axios';
+import { fetchFlashSales, deleteFlashSale } from '../services/flashSaleApi';
+import { fetchServices } from '../services/serviceApi';
+import { FlashSale, Service, ServiceProviderResponse, PaginatedResponse, ApiResponse, ErrorResponse } from '../types/flashSale.types';
 
 const ProviderFlashSales = () => {
   const { user, token } = useAppSelector(state => state.auth);
@@ -68,7 +16,7 @@ const ProviderFlashSales = () => {
   const location = useLocation();
 
   const [flashSales, setFlashSales] = useState<FlashSale[]>([]);
-  const [filteredFlashSales, setFilteredFlashSales] = useState<FlashSale[]>([]); // State cho danh sách đã lọc
+  const [filteredFlashSales, setFilteredFlashSales] = useState<FlashSale[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -77,25 +25,20 @@ const ProviderFlashSales = () => {
   const [totalPages, setTotalPages] = useState<number>(1);
   const [pageSize] = useState<number>(10);
   const [serviceProviderId, setServiceProviderId] = useState<string | null>(null);
-  const [filterServiceName, setFilterServiceName] = useState<string>(''); // State cho tìm kiếm theo tên dịch vụ
+  const [filterServiceName, setFilterServiceName] = useState<string>('');
 
-  // State để điều khiển chế độ hiển thị
   const [viewMode, setViewMode] = useState<'list' | 'add' | 'edit'>('list');
-
-  // State cho form thêm/chỉnh sửa flash sale
   const [formServiceId, setFormServiceId] = useState<string>('');
   const [formDiscountPercent, setFormDiscountPercent] = useState<string>('');
   const [formDiscountAmount, setFormDiscountAmount] = useState<string>('');
   const [formQuantity, setFormQuantity] = useState<string>('');
   const [formStartDate, setFormStartDate] = useState<string>('');
   const [formEndDate, setFormEndDate] = useState<string>('');
-
-  // State cho chỉnh sửa flash sale
   const [editingFlashSale, setEditingFlashSale] = useState<FlashSale | null>(null);
 
   useEffect(() => {
     if (!token || !user || user.role !== 'Provider') {
-      setError('Tài khoản không hợp lệ hoặc không có quyền truy cập. Vui lòng đăng nhập lại.');
+      setError('Tài khoản không hợp lệ hoặc không có quyền truy cập.');
       setTimeout(() => navigate('/provider/login'), 2000);
     }
   }, [token, user, navigate]);
@@ -103,181 +46,112 @@ const ProviderFlashSales = () => {
   const fetchServiceProviderId = async (authToken: string | null) => {
     try {
       if (!authToken || !user?._id) {
-        setError('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+        setError('Phiên đăng nhập hết hạn.');
         setTimeout(() => navigate('/provider/login'), 2000);
         return;
       }
-
-      console.log('User ID:', user._id); // Debug user._id
+      console.log('User ID:', user._id);
       const response = await axiosInstance.get('/api/ServiceProvider/get-all', {
         headers: { Authorization: `Bearer ${authToken}` },
         params: { pageNumber: 1, pageSize: 100 },
       });
-
       const responseData: ApiResponse<PaginatedResponse<ServiceProviderResponse>> = response.data;
       if (response.status !== 200 || responseData.statusCode !== 200) {
         throw new Error(responseData.message || 'Lỗi khi lấy thông tin nhà cung cấp');
       }
-
       const serviceProviders = responseData.data.items || [];
-      console.log('Service Providers:', serviceProviders); // Debug service providers
-      const matchingProvider = serviceProviders.find(provider => provider.providerId === user._id);
-
+      console.log('Service Providers:', serviceProviders);
+      const matchingProvider = serviceProviders.find((provider: ServiceProviderResponse) => provider.providerId === user._id);
       if (!matchingProvider) {
         throw new Error('Không tìm thấy nhà cung cấp phù hợp');
       }
-
       setServiceProviderId(matchingProvider.id);
-      console.log('ServiceProviderId:', matchingProvider.id); // Debug
+      console.log('ServiceProviderId:', matchingProvider.id);
     } catch (err) {
       const axiosError = err as AxiosError<ErrorResponse>;
       let errorMessage = axiosError.response?.data?.message || 'Lỗi khi lấy thông tin nhà cung cấp';
-
       if (axiosError.response?.status === 404 || errorMessage.includes('Không tìm thấy')) {
-        setError('Nhà cung cấp không tồn tại. Vui lòng kiểm tra lại thông tin tài khoản hoặc liên hệ quản trị viên.');
+        setError('Nhà cung cấp không tồn tại.');
         setServiceProviderId(null);
       } else if (axiosError.response?.status === 401) {
-        errorMessage = 'Phiên đăng nhập không hợp lệ. Vui lòng đăng nhập lại.';
+        errorMessage = 'Phiên đăng nhập không hợp lệ.';
         setTimeout(() => navigate('/provider/login'), 2000);
       } else if (axiosError.response?.status === 400) {
-        if (axiosError.response?.data?.errors) {
-          errorMessage = Object.values(axiosError.response.data.errors).flat().join(', ');
-        }
+        errorMessage = Object.values(axiosError.response.data.errors).flat().join(', ');
       } else if (axiosError.response?.status === 500) {
-        errorMessage = 'Lỗi server khi lấy thông tin nhà cung cấp. Vui lòng thử lại sau hoặc liên hệ quản trị viên.';
+        errorMessage = 'Lỗi server khi lấy thông tin nhà cung cấp.';
       }
       setError(errorMessage);
       console.error('Lỗi khi lấy ServiceProviderId:', err);
     }
   };
 
-  const fetchServices = async () => {
-    try {
-      if (!token || !serviceProviderId) {
-        setError('Không tìm thấy thông tin nhà cung cấp.');
-        return;
-      }
-
-      const response = await axiosInstance.get(`/api/Service/by-provider/${serviceProviderId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-        params: { pageNumber: 1, pageSize: 100 },
-      });
-
-      const responseData: ApiResponse<Service[]> = response.data;
-      if (response.status !== 200 || responseData.statusCode !== 200) {
-        throw new Error(responseData.message || 'Lỗi khi lấy danh sách dịch vụ');
-      }
-
-      const fetchedServices = Array.isArray(responseData.data) ? responseData.data : [];
-      console.log('Fetched services in ProviderFlashSales:', fetchedServices); // Debug
-      setServices(fetchedServices);
-      if (fetchedServices.length === 0) {
-        setError('Không có dịch vụ nào cho nhà cung cấp này. Vui lòng thêm dịch vụ trước.');
-      }
-    } catch (err) {
-      const axiosError = err as AxiosError<ErrorResponse>;
-      let errorMessage = axiosError.response?.data?.message || 'Lỗi khi lấy danh sách dịch vụ';
-
-      if (axiosError.response?.status === 404) {
-        setServices([]);
-        errorMessage = 'Không tìm thấy dịch vụ nào cho nhà cung cấp này. Vui lòng thêm dịch vụ trước.';
-      } else if (axiosError.response?.status === 401) {
-        errorMessage = 'Phiên đăng nhập không hợp lệ. Vui lòng đăng nhập lại.';
-        setTimeout(() => navigate('/provider/login'), 2000);
-      } else if (axiosError.response?.status === 400) {
-        if (axiosError.response?.data?.errors) {
-          errorMessage = Object.values(axiosError.response.data.errors).flat().join(', ');
-        }
-      } else if (axiosError.response?.status === 500) {
-        errorMessage = 'Lỗi server khi lấy danh sách dịch vụ. Vui lòng thử lại sau hoặc liên hệ quản trị viên.';
-      }
-      setError(errorMessage);
-      console.error('Lỗi khi lấy dịch vụ:', err);
+  useEffect(() => {
+    if (token && user && user.role === 'Provider') {
+      fetchServiceProviderId(token);
     }
-  };
+  }, [token, user]);
 
-  const fetchFlashSales = async () => {
-    try {
+  useEffect(() => {
+    if (serviceProviderId && token) {
       setLoading(true);
-      setError(null);
-
-      if (!user?._id || !serviceProviderId) {
-        throw new Error('Không tìm thấy ID nhà cung cấp. Vui lòng đăng nhập lại.');
-      }
-
-      const flashSaleResponse = await axiosInstance.get('/api/ServicePromotion/get-all', {
-        headers: { Authorization: `Bearer ${token}` },
-        params: { pageNumber: currentPage, pageSize: pageSize },
-      });
-
-      const flashSaleData: ApiResponse<PaginatedResponse<FlashSale>> = flashSaleResponse.data;
-      if (flashSaleResponse.status !== 200 || flashSaleData.statusCode !== 200) {
-        throw new Error(flashSaleData.message || 'Lỗi khi lấy danh sách flash sale');
-      }
-
-      const allFlashSales = flashSaleData.data.items || [];
-      console.log('All Flash Sales:', allFlashSales); // Debug tất cả flash sale
-
-      const providerServiceIds = services.map(service => service.id);
-      console.log('Provider Service IDs:', providerServiceIds); // Debug service IDs
-
-      const filteredByProvider = allFlashSales.filter(flashSale =>
-        providerServiceIds.includes(flashSale.serviceId)
-      );
-      console.log('Filtered Flash Sales (by provider):', filteredByProvider); // Debug flash sale đã lọc theo nhà cung cấp
-
-      setFlashSales(filteredByProvider); // Lưu danh sách gốc để lọc sau này
-      setFilteredFlashSales(filteredByProvider); // Khởi tạo danh sách đã lọc
-      setTotalPages(flashSaleData.data.totalPages || 1);
-
-      if (filteredByProvider.length === 0) {
-        if (allFlashSales.length > 0) {
-          setError('Không có flash sale nào thuộc nhà cung cấp hiện tại.');
-        } else {
-          setError('Chưa có flash sale nào được tạo.');
-        }
-      }
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        const axiosError = err as AxiosError<ErrorResponse>;
-        let errorMessage = axiosError.response?.data?.message || 'Lỗi khi lấy danh sách flash sale';
-
-        if (axiosError.response?.status === 404) {
-          setFlashSales([]);
-          setFilteredFlashSales([]);
-          setError('Chưa có flash sale nào được tạo.');
-        } else if (axiosError.response?.status === 401) {
-          errorMessage = 'Phiên đăng nhập không hợp lệ. Vui lòng đăng nhập lại.';
-          setTimeout(() => navigate('/provider/login'), 2000);
-        } else if (axiosError.response?.status === 500) {
-          errorMessage = 'Lỗi server khi lấy danh sách flash sale. Vui lòng thử lại sau hoặc liên hệ quản trị viên.';
-        }
-        setError(errorMessage);
-      } else {
-        setError('Lỗi không xác định khi lấy danh sách flash sale');
-      }
-    } finally {
-      setLoading(false);
+      fetchServices(serviceProviderId, token)
+        .then(data => {
+          setServices(data);
+          if (data.length === 0) {
+            setError('Chưa có dịch vụ nào. Vui lòng thêm dịch vụ trước khi tạo flash sale.');
+          } else {
+            setError(null);
+          }
+        })
+        .catch(err => {
+          setError('Không thể tải danh sách dịch vụ. Vui lòng thử lại sau.');
+          console.error('Lỗi khi lấy dịch vụ:', err);
+        })
+        .finally(() => setLoading(false));
     }
-  };
+  }, [serviceProviderId, token]);
 
-  // Lọc flash sale khi filterServiceName thay đổi
+  useEffect(() => {
+    if (serviceProviderId && token && services.length > 0) {
+      setLoading(true);
+      fetchFlashSales(token, currentPage, pageSize)
+        .then(data => {
+          const providerServiceIds = services.map(service => service.id);
+          const filteredByProvider = data.items.filter((flashSale: FlashSale) => providerServiceIds.includes(flashSale.serviceId));
+          setFlashSales(filteredByProvider);
+          setFilteredFlashSales(filteredByProvider);
+          setTotalPages(data.totalPages);
+          if (filteredByProvider.length === 0) {
+            setError('Chưa có flash sale nào. Hãy tạo flash sale đầu tiên!');
+          } else {
+            setError(null);
+          }
+        })
+        .catch(err => {
+          setError('Không thể tải danh sách flash sale. Vui lòng thử lại sau.');
+          console.error('Lỗi khi lấy flash sale:', err);
+        })
+        .finally(() => setLoading(false));
+    }
+  }, [serviceProviderId, token, services, currentPage, viewMode, location.state]);
+
   useEffect(() => {
     if (filterServiceName) {
-      const filtered = flashSales.filter(flashSale => {
+      const filtered = flashSales.filter((flashSale: FlashSale) => {
         const service = services.find(s => s.id === flashSale.serviceId);
         return service && service.serviceName.toLowerCase().includes(filterServiceName.toLowerCase());
       });
       setFilteredFlashSales(filtered);
       if (filtered.length === 0 && flashSales.length > 0) {
         setError('Không tìm thấy flash sale nào khớp với tên dịch vụ.');
-      } else if (filtered.length > 0) {
+      } else {
         setError(null);
       }
     } else {
       setFilteredFlashSales(flashSales);
-      if (flashSales.length === 0) {
-        setError('Chưa có flash sale nào được tạo.');
+      if (flashSales.length === 0 && services.length > 0) {
+        setError('Chưa có flash sale nào. Hãy tạo flash sale đầu tiên!');
       } else {
         setError(null);
       }
@@ -286,7 +160,6 @@ const ProviderFlashSales = () => {
 
   const handleFlashSaleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!formServiceId || !formDiscountPercent || !formDiscountAmount || !formQuantity || !formStartDate || !formEndDate) {
       setError('Vui lòng nhập đầy đủ thông tin flash sale');
       return;
@@ -297,17 +170,32 @@ const ProviderFlashSales = () => {
     const quantity = parseInt(formQuantity, 10);
 
     if (isNaN(discountPercent) || discountPercent < 0) {
-      setError('Mức giảm giá (%) phải là một số hợp lệ và không âm');
+      setError('Mức giảm giá (%) phải là số hợp lệ và không âm');
       return;
     }
-
     if (isNaN(discountAmount) || discountAmount < 0) {
-      setError('Mức giảm giá (số tiền) phải là một số hợp lệ và không âm');
+      setError('Mức giảm giá (VNĐ) phải là số hợp lệ và không âm');
+      return;
+    }
+    if (isNaN(quantity) || quantity < 0) {
+      setError('Số lượng phải là số hợp lệ và không âm');
       return;
     }
 
-    if (isNaN(quantity) || quantity < 0) {
-      setError('Số lượng phải là một số hợp lệ và không âm');
+    const startDate = new Date(formStartDate);
+    const endDate = new Date(formEndDate);
+    const currentDate = new Date('2025-06-04T01:10:00+07:00');
+
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      setError('Ngày bắt đầu hoặc ngày kết thúc không hợp lệ.');
+      return;
+    }
+    if (startDate < currentDate) {
+      setError('Ngày bắt đầu phải từ ngày hiện tại (01:10 AM +07, Wednesday, June 04, 2025) trở đi.');
+      return;
+    }
+    if (endDate <= startDate) {
+      setError('Ngày kết thúc phải sau ngày bắt đầu.');
       return;
     }
 
@@ -318,28 +206,22 @@ const ProviderFlashSales = () => {
 
       const payload = {
         serviceId: formServiceId,
-        discountPercent: discountPercent,
-        discountAmount: discountAmount,
-        quantity: quantity,
-        startDate: new Date(formStartDate).toISOString(),
-        endDate: new Date(formEndDate).toISOString(),
+        discountPercent,
+        discountAmount,
+        quantity,
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
       };
-
       console.log('Payload gửi lên API:', payload);
 
-      let response;
       if (editingFlashSale) {
-        response = await axiosInstance.put('/api/ServicePromotion', { ...payload, id: editingFlashSale.id }, {
+        await axiosInstance.put('/api/ServicePromotion', { ...payload, id: editingFlashSale.id }, {
           headers: { Authorization: `Bearer ${token}` },
         });
       } else {
-        response = await axiosInstance.post('/api/ServicePromotion', payload, {
+        await axiosInstance.post('/api/ServicePromotion', payload, {
           headers: { Authorization: `Bearer ${token}` },
         });
-      }
-
-      if (response.status !== 200 && response.status !== 201) {
-        throw new Error(`Lỗi khi ${editingFlashSale ? 'cập nhật' : 'thêm'} flash sale`);
       }
 
       setSuccess(`${editingFlashSale ? 'Cập nhật' : 'Thêm'} flash sale thành công`);
@@ -351,23 +233,17 @@ const ProviderFlashSales = () => {
       setFormEndDate('');
       setEditingFlashSale(null);
       setViewMode('list');
-      fetchFlashSales();
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        const axiosError = err as AxiosError<ErrorResponse>;
-        let errorMessage = axiosError.response?.data?.message || `Lỗi khi ${editingFlashSale ? 'cập nhật' : 'thêm'} flash sale`;
-
-        if (axiosError.response?.status === 500) {
-          errorMessage = 'Lỗi server khi xử lý flash sale. Vui lòng thử lại sau hoặc liên hệ quản trị viên.';
-        } else if (axiosError.response?.status === 401) {
-          errorMessage = 'Phiên đăng nhập không hợp lệ. Vui lòng đăng nhập lại.';
-          setTimeout(() => navigate('/provider/login'), 2000);
-        }
-        setError(errorMessage);
-      } else {
-        setError(`Lỗi không xác định khi ${editingFlashSale ? 'cập nhật' : 'thêm'} flash sale`);
+    } catch (err: any) {
+      const axiosError = err as AxiosError<ErrorResponse>;
+      let errorMessage = axiosError.response?.data?.message || `Lỗi khi ${editingFlashSale ? 'cập nhật' : 'thêm'} flash sale`;
+      if (axiosError.response?.status === 500) {
+        errorMessage = 'Lỗi server khi xử lý flash sale.';
+      } else if (axiosError.response?.status === 401) {
+        errorMessage = 'Phiên đăng nhập không hợp lệ.';
+        setTimeout(() => navigate('/provider/login'), 2000);
       }
-      setSuccess(null);
+      setError(errorMessage);
+      console.error('Lỗi khi xử lý flash sale:', err);
     } finally {
       setLoading(false);
     }
@@ -379,8 +255,8 @@ const ProviderFlashSales = () => {
     setFormDiscountPercent(flashSale.discountPercent.toString());
     setFormDiscountAmount(flashSale.discountAmount.toString());
     setFormQuantity(flashSale.quantity.toString());
-    setFormStartDate(flashSale.startDate);
-    setFormEndDate(flashSale.endDate);
+    setFormStartDate(flashSale.startDate.slice(0, 16));
+    setFormEndDate(flashSale.endDate.slice(0, 16));
     setViewMode('edit');
   };
 
@@ -389,33 +265,19 @@ const ProviderFlashSales = () => {
       setLoading(true);
       setError(null);
       setSuccess(null);
-
-      const response = await axiosInstance.delete(`/api/ServicePromotion/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (response.status !== 200) {
-        throw new Error('Lỗi khi xóa flash sale');
-      }
-
+      await deleteFlashSale(token!, id);
       setSuccess('Xóa flash sale thành công');
-      fetchFlashSales();
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        const axiosError = err as AxiosError<ErrorResponse>;
-        let errorMessage = axiosError.response?.data?.message || 'Lỗi khi xóa flash sale';
-
-        if (axiosError.response?.status === 500) {
-          errorMessage = 'Lỗi server khi xóa flash sale. Vui lòng thử lại sau hoặc liên hệ quản trị viên.';
-        } else if (axiosError.response?.status === 401) {
-          errorMessage = 'Phiên đăng nhập không hợp lệ. Vui lòng đăng nhập lại.';
-          setTimeout(() => navigate('/provider/login'), 2000);
-        }
-        setError(errorMessage);
-      } else {
-        setError('Lỗi không xác định khi xóa flash sale');
+    } catch (err: any) {
+      const axiosError = err as AxiosError<ErrorResponse>;
+      let errorMessage = axiosError.response?.data?.message || 'Lỗi khi xóa flash sale';
+      if (axiosError.response?.status === 500) {
+        errorMessage = 'Lỗi server khi xóa flash sale.';
+      } else if (axiosError.response?.status === 401) {
+        errorMessage = 'Phiên đăng nhập không hợp lệ.';
+        setTimeout(() => navigate('/provider/login'), 2000);
       }
-      setSuccess(null);
+      setError(errorMessage);
+      console.error('Lỗi khi xóa flash sale:', err);
     } finally {
       setLoading(false);
     }
@@ -427,24 +289,6 @@ const ProviderFlashSales = () => {
     }
   };
 
-  useEffect(() => {
-    if (token && user && user.role === 'Provider') {
-      fetchServiceProviderId(token);
-    }
-  }, [token, user, navigate]);
-
-  useEffect(() => {
-    if (serviceProviderId && token) {
-      fetchServices();
-    }
-  }, [serviceProviderId, token]);
-
-  useEffect(() => {
-    if (serviceProviderId && token && services.length > 0) {
-      fetchFlashSales();
-    }
-  }, [serviceProviderId, token, services, currentPage, viewMode, location.state]);
-
   const getServiceName = (serviceId: string) => {
     const service = services.find(s => s.id === serviceId);
     return service ? service.serviceName : 'Không xác định';
@@ -453,10 +297,8 @@ const ProviderFlashSales = () => {
   return (
     <div className="p-8">
       <h2 className="text-2xl font-semibold mb-6">Quản lý Flash Sale</h2>
-
       {error && <div className="text-red-500 mb-4">{error}</div>}
       {success && <div className="text-green-500 mb-4">{success}</div>}
-
       {viewMode === 'list' ? (
         <div className="bg-white p-6 rounded shadow-md">
           <div className="flex justify-between items-center mb-4">
@@ -467,30 +309,32 @@ const ProviderFlashSales = () => {
                 <Input
                   id="filterServiceName"
                   value={filterServiceName}
-                  onChange={(e) => setFilterServiceName(e.target.value)}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => setFilterServiceName(e.target.value)}
                   placeholder="Nhập tên dịch vụ"
                   className="w-64"
                 />
               </div>
               {services.length > 0 ? (
-                <Button onClick={() => setViewMode('add')}>Thêm Flash Sale</Button>
+                <Button onClick={() => setViewMode('add')} disabled={loading}>
+                  Thêm Flash Sale
+                </Button>
               ) : (
-                <Button disabled>Thêm Flash Sale (Cần có dịch vụ)</Button>
+                <Button disabled>Không có dịch vụ để thêm Flash Sale</Button>
               )}
             </div>
           </div>
           {loading ? (
-            <p className="text-gray-600">Đang tải dữ liệu...</p>
+            <p className="text-gray-500">Đang tải dữ liệu...</p>
           ) : filteredFlashSales.length === 0 ? (
-            <p className="text-gray-600">{error || 'Chưa có flash sale nào.'}</p>
+            <p className="text-gray-500">{services.length > 0 ? 'Chưa có flash sale nào. Hãy tạo flash sale đầu tiên!' : 'Chưa có dịch vụ nào. Vui lòng thêm dịch vụ trước.'}</p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full border-collapse border border-gray-200">
+              <table className="min-w-full border-collapse border-gray-200">
                 <thead>
                   <tr className="bg-gray-100">
                     <th className="border border-gray-200 px-4 py-2 text-left">Dịch vụ</th>
-                    <th className="border border-gray-200 px-4 py-2 text-left">Mức giảm giá (%)</th>
-                    <th className="border border-gray-200 px-4 py-2 text-left">Mức giảm giá (VNĐ)</th>
+                    <th className="border border-gray-200 px-4 py-2 text-left">Giảm giá (%)</th>
+                    <th className="border border-gray-200 px-4 py-2 text-left">Giảm giá (VNĐ)</th>
                     <th className="border border-gray-200 px-4 py-2 text-left">Số lượng</th>
                     <th className="border border-gray-200 px-4 py-2 text-left">Bắt đầu</th>
                     <th className="border border-gray-200 px-4 py-2 text-left">Kết thúc</th>
@@ -559,15 +403,11 @@ const ProviderFlashSales = () => {
                 required
               >
                 <option value="">Chọn dịch vụ</option>
-                {services.length === 0 ? (
-                  <option value="" disabled>Không có dịch vụ nào</option>
-                ) : (
-                  services.map((service) => (
-                    <option key={service.id} value={service.id}>
-                      {service.serviceName}
-                    </option>
-                  ))
-                )}
+                {services.map((service) => (
+                  <option key={service.id} value={service.id}>
+                    {service.serviceName}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
@@ -584,13 +424,13 @@ const ProviderFlashSales = () => {
               />
             </div>
             <div>
-              <Label htmlFor="discountAmount">Mức giảm giá (số tiền)</Label>
+              <Label htmlFor="discountAmount">Mức giảm giá (VNĐ)</Label>
               <Input
                 id="discountAmount"
                 type="number"
                 value={formDiscountAmount}
                 onChange={(e) => setFormDiscountAmount(e.target.value)}
-                placeholder="Nhập mức giảm giá (số tiền)"
+                placeholder="Nhập mức giảm giá (VNĐ)"
                 min="0"
                 step="0.01"
                 required
