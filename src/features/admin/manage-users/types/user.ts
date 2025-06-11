@@ -17,3 +17,15 @@ export interface User {
   createdTime: string;
   lastUpdatedTime: string;
 }
+
+export interface UserUpdatePayload {
+  id: string;
+  avatarUrl?: string;
+  gender?: string;
+  dateOfBirth?: string;
+  fullName: string;
+  addressDetail: string;
+  provinceId: string;
+  districtId: string;
+  phoneNumber: string;
+}

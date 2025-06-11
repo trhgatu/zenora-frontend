@@ -1,14 +1,10 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import ROUTERS from "@/constants/router";
 import { Service } from "@/features/admin/manage-services/types/service";
 import { getAllServices } from "@/features/admin/manage-services/services/serviceServices";
-import { Table, Tag } from "antd";
+import { Table } from "antd";
 import { ColumnsType } from "antd/es/table";
 
 export const ManageServicePage = () => {
-  const navigate = useNavigate();
   const [services, setServices] = useState<Service[]>([]);
   const [page, setPage] = useState(0);
   const [pageCount, setPageCount] = useState(1);
@@ -22,9 +18,6 @@ export const ManageServicePage = () => {
     fetchServices();
   }, [page]);
 
-  const handleEdit = (service: Service) => {
-    navigate(ROUTERS.ADMIN.service.edit(service.id));
-  };
 
   const columns: ColumnsType<Service> = [
     {
@@ -49,7 +42,7 @@ export const ManageServicePage = () => {
       key: "duration",
       render: (duration: number) => `${duration} phút`,
     },
-    
+
     {
       title: "Thời gian tạo",
       dataIndex: "createdTime",
@@ -62,14 +55,14 @@ export const ManageServicePage = () => {
       key: "lastUpdatedTime",
       render: (time: string) => new Date(time).toLocaleString("vi-VN"),
     },
-    
+
   ];
 
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-semibold">Quản lý dịch vụ</h2>
-       
+
       </div>
       <Table
         columns={columns}

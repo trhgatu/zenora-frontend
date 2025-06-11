@@ -17,6 +17,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { TopService } from "@/types/admin-statistics";
 
 // Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -47,7 +48,7 @@ const DashboardPage = () => {
         completedCount: data.completedCount,
         cancelledCount: data.cancelledCount,
         noShowCount: data.noShowCount,
-        topServices: data.topServices.map((service: any) => ({
+        topServices: data.topServices.map((service: TopService) => ({
           name: service.name || "Unknown",
           count: service.count || 0,
         })),
@@ -103,7 +104,7 @@ const DashboardPage = () => {
       },
       tooltip: {
         callbacks: {
-          label: (context: any) => `${context.dataset.label}: ${formatCurrency(context.raw)}`,
+          label: (context: import("chart.js").TooltipItem<"bar">) => `${context.dataset.label}: ${formatCurrency(Number(context.raw))}`,
         },
       },
     },
@@ -115,7 +116,9 @@ const DashboardPage = () => {
           text: "Doanh thu (VND)",
         },
         ticks: {
-          callback: (value: number) => new Intl.NumberFormat("vi-VN").format(value),
+          callback: function (tickValue: string | number) {
+            return new Intl.NumberFormat("vi-VN").format(Number(tickValue));
+          },
         },
       },
     },

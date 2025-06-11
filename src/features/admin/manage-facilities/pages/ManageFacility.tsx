@@ -51,7 +51,6 @@ export default function ManageFacilityPage() {
     setLoading(true);
     try {
       const res = await getAllSpaBranches(page + 1, 10);
-      console.log("API Response:", res);
       const data = res.items || [];
       const totalPages = res.totalPages || 1;
       setFacilities(data);

@@ -12,7 +12,6 @@ import {
 } from "antd";
 import { ArrowLeftOutlined, LoadingOutlined } from "@ant-design/icons";
 import { getSpaBranchById } from "@/features/admin/manage-facilities/services/facilityServices";
-import { toast } from "sonner";
 
 const { Title, Text } = Typography;
 

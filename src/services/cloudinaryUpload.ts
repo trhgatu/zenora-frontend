@@ -4,17 +4,14 @@ export const CLOUDINARY_UPLOAD_PRESET = 'beautyspa_upload';
 
 export const uploadImageToCloudinary = async (imageUri: string) => {
   const formData = new FormData();
-  
+
   if (imageUri.startsWith('blob:') || imageUri.startsWith('data:')) {
     const response = await fetch(imageUri);
     const blob = await response.blob();
     formData.append('file', blob, 'upload.jpg');
   } else {
-    formData.append('file', {
-      uri: imageUri,
-      type: 'image/jpeg',
-      name: 'upload.jpg',
-    } as any);
+    const fileBlob = new Blob([], { type: 'image/jpeg' });
+    formData.append('file', fileBlob, 'upload.jpg');
   }
 
   formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);

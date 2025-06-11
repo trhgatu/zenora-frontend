@@ -31,3 +31,8 @@ export const createCategory = async (data: CreateServiceCategoryRequest) => {
   const response = await axiosInstance.post("/ServiceCategory/create", data)
   return response.data
 }
+
+export const getCategoryById = async (id: string) => {
+  const response = await axiosInstance.get(`/ServiceCategory/${id}`)
+  return response.data;
+}

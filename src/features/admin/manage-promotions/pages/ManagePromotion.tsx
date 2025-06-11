@@ -16,7 +16,6 @@ import {
   EyeOutlined,
   ReloadOutlined,
   SearchOutlined,
-  FilterOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import { Promotion } from "@/features/admin/manage-promotions/types/promotion";
@@ -100,10 +99,6 @@ export const ManagePromotionPage = () => {
 
   const handleSearch = (value: string) => {
     setSearchText(value);
-  };
-
-  const handleStatusFilter = (value: string) => {
-    setStatusFilter(value);
   };
 
   const clearFilters = () => {
@@ -216,7 +211,7 @@ export const ManagePromotionPage = () => {
               className="w-full"
             />
           </div>
-         
+
           <div>
             <Button onClick={clearFilters} className="w-full md:w-auto">
               Xóa bộ lọc

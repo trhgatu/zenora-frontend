@@ -1,8 +1,5 @@
 // Define the interface for location data (adjust based on your API response)
-interface Location {
-  id: string;
-  name: string;
-}
+import { Location } from '@/types/location';
 
 interface LocationState {
   provinces: Location[];
@@ -29,8 +26,11 @@ export const getProvinces = createAsyncThunk(
     try {
       const data = await fetchProvinces();
       return data;
-    } catch (err: any) {
-      return rejectWithValue(err.message || 'Lỗi khi lấy danh sách tỉnh/thành');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message || 'Lỗi khi lấy danh sách tỉnh/thành');
+      }
+      return rejectWithValue('Lỗi khi lấy danh sách tỉnh/thành');
     }
   }
 );
@@ -41,8 +41,11 @@ export const getDistricts = createAsyncThunk(
     try {
       const data = await fetchDistricts(provinceId);
       return data;
-    } catch (err: any) {
-      return rejectWithValue(err.message || 'Lỗi khi lấy danh sách quận/huyện');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return rejectWithValue(err.message || 'Lỗi khi lấy danh sách quận/huyện');
+      }
+      return rejectWithValue('Lỗi khi lấy danh sách quận/huyện');
     }
   }
 );

@@ -1,6 +1,5 @@
 import axiosInstance from '@/services/axios';
 
-// Define a basic request body type for statistics (customize as needed)
 interface StatisticsRequest {
   startDate?: string;
   endDate?: string;
@@ -13,7 +12,7 @@ export const getAdminStatistics = async (page: number, size: number, request: St
       pageNumber: page,
       pageSize: size,
     },
-    data: request, 
+    data: request,
   });
   return response.data.data;
 };

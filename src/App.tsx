@@ -11,7 +11,7 @@ import ROUTERS from "@/constants/router";
 import PrivateRoute from "@/routes/PrivateRoute";
 import DashboardPage from "@/features/admin/dashboard/pages/Dashboard";
 import { CreateRolePage, EditRolePage, DetailRolePage, ManageRolePage } from "@/features/admin/manage-roles/pages";
-import { ManageCategoryPage, CreateCategoryPage } from "@/features/admin/manage-categories/pages";
+import { ManageCategoryPage, CreateCategoryPage, EditCategoryPage, DetailCategoryPage } from "@/features/admin/manage-categories/pages";
 import { ManagePromotionPage } from "@/features/admin/manage-promotions/pages";
 import { CreatePromotionPage } from "@/features/admin/manage-promotions/pages/CreatePromotion";
 
@@ -53,7 +53,7 @@ function App() {
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path={ROUTERS.ADMIN.facility.root}>
               <Route index element={<ManageFacilityPage />} />
-              <Route path="show/:id" element={<SpaBranchDetail />} /> 
+              <Route path="show/:id" element={<SpaBranchDetail />} />
             </Route>
             <Route path="roles">
               <Route index element={<ManageRolePage />} />
@@ -76,6 +76,8 @@ function App() {
             <Route path="categories">
               <Route index element={<ManageCategoryPage />} />
               <Route path="create" element={<CreateCategoryPage />} />
+              <Route path="edit/:id" element={<EditCategoryPage />} />
+              <Route path="detail/:id" element={<DetailCategoryPage />} />
             </Route>
             <Route path="services">
               <Route index element={<ManageServicePage />} />
@@ -84,7 +86,7 @@ function App() {
             </Route>
             <Route path="promotions">
               <Route index element={<ManagePromotionPage />} />
-                <Route path="create" element={<CreatePromotionPage />} />
+              <Route path="create" element={<CreatePromotionPage />} />
 
             </Route>
           </Route>

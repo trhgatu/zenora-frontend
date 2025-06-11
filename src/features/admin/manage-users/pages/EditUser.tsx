@@ -1,132 +1,118 @@
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useState, useEffect, useCallback } from "react";
-import { updateUser, getUserById } from "@/features/admin/manage-users/services/userServices";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { getUserById, updateUser } from "@/features/admin/manage-users/services/userServices";
 import { uploadImageToCloudinary } from "@/services/cloudinaryUpload";
 import { fetchProvinces, fetchDistricts } from "@/services/locationAPI";
+import { Location } from "@/types/location";
+import { Button } from "@/components/ui/button";
+import { Input } from "antd";
+import { EditUserSchema } from "@/features/admin/manage-users/validator/user";
 
-interface UserData {
-  avatarUrl: string;
-  gender: string;
-  dateOfBirth: string;
-  fullName: string;
-  addressDetail: string;
-  provinceId: string;
-  districtId: string;
-  phoneNumber: string;
-}
+type FormData = z.infer<typeof EditUserSchema>;
 
 export const EditUserPage = () => {
   const { id } = useParams<{ id: string }>();
-  const [userData, setUserData] = useState<UserData>({
-    avatarUrl: "",
-    gender: "",
-    dateOfBirth: "",
-    fullName: "",
-    addressDetail: "",
-    provinceId: "",
-    districtId: "",
-    phoneNumber: "",
-  });
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [provinces, setProvinces] = useState<any[]>([]);
-  const [districts, setDistricts] = useState<any[]>([]);
+  const [provinces, setProvinces] = useState<Location[]>([]);
+  const [districts, setDistricts] = useState<Location[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [errors, setErrors] = useState<Partial<UserData>>({});
 
-  // Fetch provinces on mount
+  const form = useForm<FormData>({
+    resolver: zodResolver(EditUserSchema),
+    defaultValues: {
+      avatarUrl: "",
+      gender: "",
+      dateOfBirth: "",
+      fullName: "",
+      addressDetail: "",
+      provinceId: "",
+      districtId: "",
+      phoneNumber: "",
+    },
+  });
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    reset,
+    formState: { errors },
+  } = form;
+
+  const provinceId = watch("provinceId");
+
   useEffect(() => {
     const loadProvinces = async () => {
-      try {
-        const provinceData = await fetchProvinces();
-        setProvinces(provinceData);
-      } catch (error) {
-        console.error("Không thể tải danh sách tỉnh/thành:", error);
-      }
+      const data = await fetchProvinces();
+      setProvinces(data);
     };
     loadProvinces();
   }, []);
 
-  // Fetch districts when province changes
   useEffect(() => {
     const loadDistricts = async () => {
-      if (userData.provinceId) {
-        try {
-          const districtData = await fetchDistricts(userData.provinceId);
-          setDistricts(districtData);
-        } catch (error) {
-          console.error("Không thể tải danh sách quận/huyện:", error);
-        }
+      if (provinceId) {
+        const data = await fetchDistricts(provinceId);
+        setDistricts(data);
       } else {
         setDistricts([]);
       }
     };
     loadDistricts();
-  }, [userData.provinceId]);
+  }, [provinceId]);
 
-  // Fetch user data
   useEffect(() => {
     const fetchUser = async () => {
       if (id) {
         try {
-          const data = await getUserById(id);
-          setUserData(data);
-        } catch (error) {
-          console.error("Không thể tải thông tin người dùng:", error);
-        } finally {
-          setLoading(false);
+          const res = await getUserById(id);
+          const userData = res.data;
+
+          const formattedData: FormData = {
+            fullName: userData.fullName || "",
+            phoneNumber: userData.phoneNumber || "",
+            gender: userData.gender || "",
+            addressDetail: userData.addressDetail || "",
+            provinceId: userData.provinceId || "",
+            districtId: userData.districtId || "",
+            avatarUrl: userData.avatarUrl || "",
+            dateOfBirth:
+              userData.dateOfBirth && userData.dateOfBirth !== "0001-01-01T00:00:00"
+                ? new Date(userData.dateOfBirth).toISOString().split("T")[0]
+                : "",
+          };
+
+          reset(formattedData);
+        } catch (err) {
+          console.error("Lỗi tải dữ liệu người dùng:", err);
         }
       }
+      setLoading(false);
     };
     fetchUser();
-  }, [id]);
+  }, [id, reset]);
 
-  const validateForm = useCallback(() => {
-    const newErrors: Partial<UserData> = {};
-    if (!userData.fullName.trim()) newErrors.fullName = "Họ và tên là bắt buộc";
-    if (!userData.phoneNumber.match(/^\d{10,11}$/)) newErrors.phoneNumber = "Số điện thoại không hợp lệ";
-    if (!userData.provinceId) newErrors.provinceId = "Vui lòng chọn tỉnh/thành";
-    if (!userData.districtId) newErrors.districtId = "Vui lòng chọn quận/huyện";
-    if (!userData.addressDetail.trim()) newErrors.addressDetail = "Địa chỉ chi tiết là bắt buộc";
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  }, [userData]);
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setUserData((prev) => ({ ...prev, [name]: value }));
-    setErrors((prev) => ({ ...prev, [name]: undefined }));
-  };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setImageFile(e.target.files[0]);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-
+  const onSubmit = async (data: FormData) => {
     setSubmitting(true);
     try {
-      let updatedData = { ...userData };
+      let avatarUrl = data.avatarUrl;
 
-      // Upload image if selected
       if (imageFile) {
-        const imageUrl = await uploadImageToCloudinary(URL.createObjectURL(imageFile));
-        updatedData = { ...updatedData, avatarUrl: imageUrl };
+        avatarUrl = await uploadImageToCloudinary(URL.createObjectURL(imageFile));
       }
 
       if (id) {
-        await updateUser(id, updatedData);
-        alert("Cập nhật thông tin người dùng thành công!");
+        await updateUser(id, { ...data, avatarUrl });
+        alert("Cập nhật thành công");
       }
-    } catch (error) {
-      console.error("Cập nhật thông tin người dùng thất bại:", error);
-      alert("Cập nhật thông tin người dùng thất bại");
+    } catch (err) {
+      console.error("Lỗi cập nhật:", err);
+      alert("Cập nhật thất bại");
     } finally {
       setSubmitting(false);
     }
@@ -135,144 +121,115 @@ export const EditUserPage = () => {
   if (loading) return <div className="text-center py-8">Đang tải...</div>;
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Chỉnh sửa thông tin người dùng</h1>
-      <p className="text-gray-600 mb-4">Đang chỉnh sửa người dùng với ID: {id}</p>
-      
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-6">Chỉnh sửa người dùng</h1>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Ảnh đại diện</label>
-          {userData.avatarUrl && (
-            <img
-              src={userData.avatarUrl}
-              alt="Ảnh đại diện"
-              className="w-24 h-24 rounded-full mb-2"
-            />
-          )}
-          <input
+          <label className="block text-sm font-medium">Ảnh đại diện</label>
+          <Input
             type="file"
             accept="image/*"
-            onChange={handleImageChange}
-            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            onChange={(e) => setImageFile(e.target.files?.[0] || null)}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Giới tính</label>
-          <select
-            name="gender"
-            value={userData.gender}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          >
-            <option value="">Chọn giới tính</option>
+          <label>Giới tính</label>
+          <select {...register("gender")} className="w-full p-2 border rounded">
+            <option value="">Chọn</option>
             <option value="male">Nam</option>
             <option value="female">Nữ</option>
             <option value="other">Khác</option>
           </select>
+          {errors.gender && <p className="text-red-500">{errors.gender.message}</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Ngày sinh</label>
-          <input
+          <label>Ngày sinh</label>
+          <Input
             type="date"
-            name="dateOfBirth"
-            value={userData.dateOfBirth}
-            onChange={handleChange}
+            {...register("dateOfBirth")}
             className="w-full p-2 border rounded"
           />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">Họ và tên</label>
-          <input
-            type="text"
-            name="fullName"
-            value={userData.fullName}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          />
-          {errors.fullName && (
-            <p className="text-red-500 text-sm">{errors.fullName}</p>
+          {errors.dateOfBirth && (
+            <p className="text-red-500">{errors.dateOfBirth.message}</p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Tỉnh/Thành phố</label>
+          <label>Họ và tên</label>
+          <Input
+            {...register("fullName")}
+            className="w-full p-2 border rounded"
+          />
+          {errors.fullName && (
+            <p className="text-red-500">{errors.fullName.message}</p>
+          )}
+        </div>
+
+        <div>
+          <label>Tỉnh/Thành phố</label>
           <select
-            name="provinceId"
-            value={userData.provinceId}
-            onChange={handleChange}
+            {...register("provinceId")}
             className="w-full p-2 border rounded"
           >
-            <option value="">Chọn tỉnh/thành phố</option>
-            {provinces.map((province) => (
-              <option key={province.id} value={province.id}>
-                {province.name}
+            <option value="">Chọn tỉnh</option>
+            {provinces.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
               </option>
             ))}
           </select>
           {errors.provinceId && (
-            <p className="text-red-500 text-sm">{errors.provinceId}</p>
+            <p className="text-red-500">{errors.provinceId.message}</p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Quận/Huyện</label>
+          <label>Quận/Huyện</label>
           <select
-            name="districtId"
-            value={userData.districtId}
-            onChange={handleChange}
+            {...register("districtId")}
             className="w-full p-2 border rounded"
-            disabled={!userData.provinceId}
+            disabled={!provinceId}
           >
-            <option value="">Chọn quận/huyện</option>
-            {districts.map((district) => (
-              <option key={district.id} value={district.id}>
-                {district.name}
+            <option value="">Chọn quận</option>
+            {districts.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.name}
               </option>
             ))}
           </select>
           {errors.districtId && (
-            <p className="text-red-500 text-sm">{errors.districtId}</p>
+            <p className="text-red-500">{errors.districtId.message}</p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Địa chỉ chi tiết</label>
-          <input
-            type="text"
-            name="addressDetail"
-            value={userData.addressDetail}
-            onChange={handleChange}
+          <label>Địa chỉ chi tiết</label>
+          <Input
+            {...register("addressDetail")}
             className="w-full p-2 border rounded"
           />
           {errors.addressDetail && (
-            <p className="text-red-500 text-sm">{errors.addressDetail}</p>
+            <p className="text-red-500">{errors.addressDetail.message}</p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Số điện thoại</label>
-          <input
+          <label>Số điện thoại</label>
+          <Input
             type="tel"
-            name="phoneNumber"
-            value={userData.phoneNumber}
-            onChange={handleChange}
+            {...register("phoneNumber")}
             className="w-full p-2 border rounded"
           />
           {errors.phoneNumber && (
-            <p className="text-red-500 text-sm">{errors.phoneNumber}</p>
+            <p className="text-red-500">{errors.phoneNumber.message}</p>
           )}
         </div>
 
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-blue-300"
-        >
+        <Button type="submit" disabled={submitting}>
           {submitting ? "Đang lưu..." : "Lưu thay đổi"}
-        </button>
+        </Button>
       </form>
     </div>
   );
