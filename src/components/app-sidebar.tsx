@@ -1,18 +1,15 @@
-import ROUTERS from "@/constants/router"
-import * as React from "react"
+import ROUTERS from "@/constants/router";
+import * as React from "react";
 import {
   IconDashboard,
   IconFolder,
-  IconHelp,
   IconListDetails,
-  IconSearch,
-  IconSettings,
   IconUsers,
-} from "@tabler/icons-react"
+} from "@tabler/icons-react";
+import { useAppSelector } from "@/hooks";
 
-import { NavMain } from "@/components/nav-main"
-import { NavSecondary } from "@/components/nav-secondary"
-import { NavUser } from "@/components/nav-user"
+import { NavMain } from "@/components/nav-main";
+import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -21,14 +18,9 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
     {
       title: "Dashboard",
@@ -45,7 +37,6 @@ const data = {
       url: ROUTERS.ADMIN.category.root,
       icon: IconListDetails,
     },
-
     {
       title: "Quản lý người dùng",
       url: ROUTERS.ADMIN.user.root,
@@ -77,26 +68,30 @@ const data = {
       icon: IconUsers,
     },
   ],
-  navSecondary: [
-    {
-      title: "Settings",
-      url: "#",
-      icon: IconSettings,
-    },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: IconHelp,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: IconSearch,
-    },
-  ],
-}
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user, isInitialized } = useAppSelector(state => state.auth);
+  const userData = user
+    ? {
+        name: user.name || user.email.split("@")[0],
+        email: user.email,
+        avatar: "/avatars/default.jpg",
+      }
+    : {
+        name: "Guest",
+        email: "",
+        avatar: "/avatars/default.jpg",
+      };
+
+  if (!isInitialized) {
+    return (
+      <div className="flex items-center justify-center h-screen text-gray-500">
+        Đang tải thông tin...
+      </div>
+    );
+  }
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -115,11 +110,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={userData} />
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }
