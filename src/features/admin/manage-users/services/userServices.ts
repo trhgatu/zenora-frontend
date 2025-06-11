@@ -28,3 +28,8 @@ export const softDeleteUserById = async (id: string) => {
   const response = await axiosInstance.delete(`/User/Delete/${id}`)
   return response.data
 }
+
+export const deactiveProvider = async (userId: string) => {
+  const response = await axiosInstance.put(`User/deactive-provider/${userId}`)
+  return response.data
+}

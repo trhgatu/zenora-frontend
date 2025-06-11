@@ -155,10 +155,10 @@ export const ManageUserPage = () => {
       ),
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email',
-      sorter: (a, b) => (a.email || '').localeCompare(b.email || ''),
+      title: 'Vai trò',
+      dataIndex: 'roleName',
+      key: 'roleName',
+      sorter: (a, b) => (a.roleName || '').localeCompare(b.roleName || ''),
       render: (text: string) => (
         <Typography.Text>{text || 'N/A'}</Typography.Text>
       ),
