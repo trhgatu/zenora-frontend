@@ -14,7 +14,6 @@ import {
   Popconfirm
 } from 'antd';
 import {
-  PlusOutlined,
   EditOutlined,
   EyeOutlined,
   ReloadOutlined,
@@ -260,14 +259,6 @@ export const ManageUserPage = () => {
               className="flex items-center"
             >
               Làm mới
-            </Button>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => navigate(ROUTERS.ADMIN.user.create)}
-              className="flex items-center"
-            >
-              Tạo người dùng
             </Button>
           </Space>
         </div>

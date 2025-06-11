@@ -10,7 +10,7 @@ const PrivateRoute = ({ allowedRoles }: { allowedRoles: string[] }) => {
   }
 
   if (!isAuthenticated || !allowedRoles.includes(user?.role ?? '')) {
-    const redirectPath = user?.role === 'Provider' ? ROUTERS.PROVIDER.auth.login : ROUTERS.ADMIN.auth.login;
+    const redirectPath =  ROUTERS.ADMIN.auth.login;
     return <Navigate to={redirectPath} replace />;
   }
 

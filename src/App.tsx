@@ -16,7 +16,7 @@ import { ManagePromotionPage } from "@/features/admin/manage-promotions/pages";
 import { CreatePromotionPage } from "@/features/admin/manage-promotions/pages/CreatePromotion";
 
 import { ManageRankPage, CreateRankPage, EditRankPage, DetailRankPage } from "@/features/admin/manage-ranks/pages";
-import { ManageUserPage, CreateUserPage, DetailUserPage, EditUserPage } from "@/features/admin/manage-users/pages";
+import { ManageUserPage, DetailUserPage, EditUserPage } from "@/features/admin/manage-users/pages";
 import { ManageServicePage, CreateServicePage, DetailServicePage } from "@/features/admin/manage-services/pages";
 import ManageFacilityPage from "./features/admin/manage-facilities/pages/ManageFacility";
 import { SpaBranchDetail } from "./features/admin/manage-facilities/pages/SpaBranchDetail";
@@ -65,7 +65,6 @@ function App() {
             </Route>
             <Route path="users">
               <Route index element={<ManageUserPage />} />
-              <Route path="create" element={<CreateUserPage />} />
               <Route path="edit/:id" element={<EditUserPage />} />
               <Route path="detail/:id" element={<DetailUserPage />} />
             </Route>
