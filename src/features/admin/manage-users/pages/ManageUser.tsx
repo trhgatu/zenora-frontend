@@ -134,8 +134,8 @@ export const ManageUserPage = () => {
   const columns: ColumnsType<User> = [
     {
       title: 'Tên người dùng',
-      dataIndex: 'name',
-      key: 'name',
+      dataIndex: 'fullName',
+      key: 'fullName',
       sorter: (a, b) => (a.fullName || '').localeCompare(b.fullName || ''),
       render: (text: string) => (
         <Typography.Text strong>{text || 'N/A'}</Typography.Text>

@@ -13,6 +13,8 @@ import DashboardPage from "@/features/admin/dashboard/pages/Dashboard";
 import { CreateRolePage, EditRolePage, DetailRolePage, ManageRolePage } from "@/features/admin/manage-roles/pages";
 import { ManageCategoryPage, CreateCategoryPage } from "@/features/admin/manage-categories/pages";
 import { ManagePromotionPage } from "@/features/admin/manage-promotions/pages";
+import { CreatePromotionPage } from "@/features/admin/manage-promotions/pages/CreatePromotion";
+
 import { ManageRankPage, CreateRankPage, EditRankPage, DetailRankPage } from "@/features/admin/manage-ranks/pages";
 // Provider Imports
 import { ManageUserPage, CreateUserPage, DetailUserPage, EditUserPage } from "@/features/admin/manage-users/pages";
@@ -20,8 +22,8 @@ import { ProviderLayout } from "@/layouts/ProviderLayout";
 import { ProviderLoginPage } from "@/features/provider/auth/pages";
 import { ProviderDashboardPage } from "@/features/provider/dashboard/pages/Dashboard";
 import { ManageServicePage, CreateServicePage, DetailServicePage } from "@/features/admin/manage-services/pages";
-/* import { ProviderLoginPage } from "@/features/provider/auth/pages";
-import { ProviderDashboardPage } from "@/features/provider/dashboard/pages"; */
+import ManageFacilityPage from "./features/admin/manage-facilities/pages/ManageFacility";
+import { SpaBranchDetail } from "./features/admin/manage-facilities/pages/SpaBranchDetail";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -49,6 +51,10 @@ function App() {
           <Route element={<AdminLayout />}>
             <Route index element={<Navigate to={ROUTERS.ADMIN.dashboard} replace />} />
             <Route path="dashboard" element={<DashboardPage />} />
+            <Route path={ROUTERS.ADMIN.facility.root}>
+              <Route index element={<ManageFacilityPage />} />
+              <Route path="show/:id" element={<SpaBranchDetail />} /> 
+            </Route>
             <Route path="roles">
               <Route index element={<ManageRolePage />} />
               <Route path="create" element={<CreateRolePage />} />
@@ -61,7 +67,7 @@ function App() {
               <Route path="edit/:id" element={<EditRankPage />} />
               <Route path="detail/:id" element={<DetailRankPage />} />
             </Route>
-             <Route path="users">
+            <Route path="users">
               <Route index element={<ManageUserPage />} />
               <Route path="create" element={<CreateUserPage />} />
               <Route path="edit/:id" element={<EditUserPage />} />
@@ -78,6 +84,8 @@ function App() {
             </Route>
             <Route path="promotions">
               <Route index element={<ManagePromotionPage />} />
+                <Route path="create" element={<CreatePromotionPage />} />
+
             </Route>
           </Route>
         </Route>

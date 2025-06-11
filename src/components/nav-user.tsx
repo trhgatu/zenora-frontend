@@ -5,6 +5,8 @@ import {
   IconNotification,
   IconUserCircle,
 } from "@tabler/icons-react"
+import { useDispatch } from "react-redux"
+import { logout } from "@/store/authSlice"
 
 import {
   Avatar,
@@ -37,6 +39,11 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const dispatch = useDispatch()
+
+  const handleLogout = () => {
+    dispatch(logout())
+  }
 
   return (
     <SidebarMenu>
@@ -96,7 +103,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <IconLogout />
               Log out
             </DropdownMenuItem>

@@ -7,10 +7,18 @@ export const getAllUsers = async (page: number, size: number) => {
             pageSize: size,
         },
     });
-    return response.data.data
+    return response.data.data;
 }
 
 export const getUserById = async (id: string) => {
     const response = await axiosInstance.get(`/User/${id}`);
+    return response.data.data;
+}
+
+export const updateUser = async (id: string, userData: { avatarUrl?: string; gender?: string; fullName?: string; dateOfBirth?: string; provinceId?: string; districtId?: string; phoneNumber?: string }) => {
+    const response = await axiosInstance.put(`/api/User/update`, {
+        id,
+        ...userData,
+    });
     return response.data.data;
 }

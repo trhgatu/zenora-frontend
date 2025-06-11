@@ -177,8 +177,20 @@ export const ManageCategoryPage = () => {
     },
     {
       title: 'Ngày tạo',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
+      dataIndex: 'createdTime',
+      key: 'createdTime',
+      width: 150,
+      sorter: (a, b) => new Date(a.createdTime).getTime() - new Date(b.createdTime).getTime(),
+      render: (date: string) => (
+        <Typography.Text type="secondary">
+          {new Date(date).toLocaleDateString('vi-VN')}
+        </Typography.Text>
+      ),
+    },
+    {
+      title: 'Ngày chỉnh sửa gần nhất',
+      dataIndex: 'lastUpdatedTime',
+      key: 'lastUpdatedTime',
       width: 150,
       sorter: (a, b) => new Date(a.createdTime).getTime() - new Date(b.createdTime).getTime(),
       render: (date: string) => (
