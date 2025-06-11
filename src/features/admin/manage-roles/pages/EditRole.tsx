@@ -1,15 +1,12 @@
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { useNavigate, useParams } from "react-router-dom";
 import { getRoleById, updateRole } from "../services/roleService";
+import { z } from "zod";
 import { toast } from "sonner";
-import { Flex, Spin } from 'antd';
-import { LoadingOutlined } from '@ant-design/icons';
-import BackButton from "@/components/BackButton";
+import { Form, Input, Button, Spin, Typography, Alert, Space } from "antd";
+import { ArrowLeftOutlined, LoadingOutlined } from "@ant-design/icons";
+
+const { Title } = Typography;
 
 const schema = z.object({
   id: z.string(),
@@ -22,28 +19,23 @@ export const EditRolePage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors, isSubmitting },
-  } = useForm<EditRoleFormData>({
-    resolver: zodResolver(schema),
-    defaultValues: {
-      id: id ?? "",
-      roleName: "",
-    },
-  });
+  const [error, setError] = useState<string | null>(null);
+  const [form] = Form.useForm<EditRoleFormData>();
 
   useEffect(() => {
     const fetchRole = async () => {
       try {
-        if (!id) return;
+        if (!id) {
+          setError("Không tìm thấy ID vai trò");
+          return;
+        }
         const role = await getRoleById(id);
-        setValue("id", role.id);
-        setValue("roleName", role.roleName);
+        form.setFieldsValue({
+          id: role.id,
+          roleName: role.roleName,
+        });
       } catch {
+        setError("Không thể tải vai trò");
         toast.error("Không thể tải vai trò.");
         navigate("/admin/roles");
       } finally {
@@ -51,11 +43,12 @@ export const EditRolePage = () => {
       }
     };
     fetchRole();
-  }, [id, navigate, setValue]);
+  }, [id, navigate, form]);
 
-  const onSubmit = async (data: EditRoleFormData) => {
+  const onFinish = async (values: EditRoleFormData) => {
     try {
-      await updateRole(data);
+      const validatedData = schema.parse(values);
+      await updateRole(validatedData);
       toast.success("Cập nhật vai trò thành công!");
       navigate("/admin/roles");
     } catch (error) {
@@ -66,41 +59,86 @@ export const EditRolePage = () => {
 
   if (loading) {
     return (
-      <Flex align="center" gap="middle">
-        <Spin indicator={<LoadingOutlined spin />} size="large" />
-      </Flex>
+      <div style={{ textAlign: "center", padding: "50px" }}>
+        <Spin indicator={<LoadingOutlined spin />} size="large" tip="Đang tải..." />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <Alert
+        message="Lỗi"
+        description={error}
+        type="error"
+        showIcon
+        style={{ margin: "20px" }}
+      />
     );
   }
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold text-gray-800">Chỉnh sửa vai trò</h2>
-        <BackButton />
-      </div>
+    <div style={{ padding: "20px" }}>
+      <Space align="center" style={{ marginBottom: 16, width: "100%", justifyContent: "space-between" }}>
+        <Title level={3} style={{ margin: 0 }}>
+          Chỉnh sửa vai trò
+        </Title>
+        <Button
+          icon={<ArrowLeftOutlined />}
+          onClick={() => navigate("/admin/roles")}
+        >
+          Quay lại
+        </Button>
+      </Space>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Tên vai trò
-          </label>
-          <Input
-            type="text"
-            {...register("roleName")}
-            className="w-full"
-            placeholder="Nhập tên vai trò"
-          />
-          {errors.roleName && (
-            <p className="text-sm text-red-500 mt-1">{errors.roleName.message}</p>
-          )}
-        </div>
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={onFinish}
+        initialValues={{ id: id ?? "" }}
+      >
+        <Form.Item
+          name="id"
+          hidden
+        >
+          <Input disabled />
+        </Form.Item>
 
-        <div className="flex justify-end">
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Đang cập nhật..." : "Cập nhật"}
+        <Form.Item
+          name="roleName"
+          label="Tên vai trò"
+          rules={[
+            {
+              required: true,
+              validator: async (_, value) => {
+                try {
+                  schema.parse({ id: id ?? "", roleName: value });
+                  return Promise.resolve();
+                } catch (error) {
+                  return Promise.reject(
+                    error instanceof z.ZodError
+                      ? error.errors[0].message
+                      : "Lỗi xác thực"
+                  );
+                }
+              },
+            },
+          ]}
+        >
+          <Input placeholder="Nhập tên vai trò" />
+        </Form.Item>
+
+        <Form.Item>
+          <Button
+            type="primary"
+            htmlType="submit"
+            loading={form.isFieldsValidating()}
+            block
+          >
+            Cập nhật
           </Button>
-        </div>
-      </form>
+        </Form.Item>
+      </Form>
     </div>
   );
 };
