@@ -62,11 +62,6 @@ const data = {
       url: ROUTERS.ADMIN.promotion.root,
       icon: IconFolder,
     },
-    {
-      title: "Quản lý thanh toán",
-      url: ROUTERS.ADMIN.payment.root,
-      icon: IconUsers,
-    },
   ],
 };
 
