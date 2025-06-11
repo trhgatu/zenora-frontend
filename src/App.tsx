@@ -16,11 +16,7 @@ import { ManagePromotionPage } from "@/features/admin/manage-promotions/pages";
 import { CreatePromotionPage } from "@/features/admin/manage-promotions/pages/CreatePromotion";
 
 import { ManageRankPage, CreateRankPage, EditRankPage, DetailRankPage } from "@/features/admin/manage-ranks/pages";
-// Provider Imports
 import { ManageUserPage, CreateUserPage, DetailUserPage, EditUserPage } from "@/features/admin/manage-users/pages";
-import { ProviderLayout } from "@/layouts/ProviderLayout";
-import { ProviderLoginPage } from "@/features/provider/auth/pages";
-import { ProviderDashboardPage } from "@/features/provider/dashboard/pages/Dashboard";
 import { ManageServicePage, CreateServicePage, DetailServicePage } from "@/features/admin/manage-services/pages";
 import ManageFacilityPage from "./features/admin/manage-facilities/pages/ManageFacility";
 import { SpaBranchDetail } from "./features/admin/manage-facilities/pages/SpaBranchDetail";
@@ -89,14 +85,6 @@ function App() {
               <Route path="create" element={<CreatePromotionPage />} />
 
             </Route>
-          </Route>
-        </Route>
-
-        <Route path={ROUTERS.PROVIDER.auth.login} element={<ProviderLoginPage />} />
-        <Route path={ROUTERS.PROVIDER.root} element={<PrivateRoute allowedRoles={["Provider"]} />}>
-          <Route element={<ProviderLayout />}>
-            <Route index element={<Navigate to={ROUTERS.PROVIDER.dashboard} replace />} />
-            <Route path="dashboard" element={<ProviderDashboardPage />} />
           </Route>
         </Route>
       </Routes>

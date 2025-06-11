@@ -23,3 +23,8 @@ export const updateUser = async (id: string, userData: Omit<UserUpdatePayload, "
   });
   return response.data.data;
 };
+
+export const softDeleteUserById = async (id: string) => {
+  const response = await axiosInstance.delete(`/User/Delete/${id}`)
+  return response.data
+}

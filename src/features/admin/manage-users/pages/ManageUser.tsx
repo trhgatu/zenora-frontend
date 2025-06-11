@@ -10,7 +10,8 @@ import {
   message,
   Select,
   Tooltip,
-  Spin
+  Spin,
+  Popconfirm
 } from 'antd';
 import {
   PlusOutlined,
@@ -19,10 +20,11 @@ import {
   ReloadOutlined,
   SearchOutlined,
   FilterOutlined,
-  UserOutlined
+  UserOutlined,
+  DeleteOutlined
 } from '@ant-design/icons';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
-import { getAllUsers } from "@/features/admin/manage-users/services/userServices";
+import { getAllUsers, softDeleteUserById } from "@/features/admin/manage-users/services/userServices";
 import { User } from "@/features/admin/manage-users/types/user";
 import ROUTERS from "@/constants/router";
 import { toast } from "sonner";
@@ -124,12 +126,12 @@ export const ManageUserPage = () => {
     setStatusFilter('all');
   };
 
-  /* const handleDelete = async (user: User) => {
-    if (window.confirm(`Are you sure you want to delete ${user.name}?`)) {
-      await deleteUserById(user.id)
+  const handleDelete = async (user: User) => {
+    if (window.confirm(`Bạn có muốn xóa người dùng ${user.fullName}?`)) {
+      await softDeleteUserById(user.id)
       setUsers((prev) => prev.filter((u) => u.id !== user.id))
     }
-  } */
+  }
 
   const columns: ColumnsType<User> = [
     {
@@ -202,10 +204,10 @@ export const ManageUserPage = () => {
               onClick={() => handleEdit(record)}
             />
           </Tooltip>
-          {/* <Tooltip title="Xóa">
+          <Tooltip title="Xóa">
             <Popconfirm
               title="Xác nhận xóa"
-              description={`Bạn có chắc chắn muốn xóa người dùng "${record.name}"?`}
+              description={`Bạn có chắc chắn muốn xóa người dùng "${record.fullName}"?`}
               onConfirm={() => handleDelete(record)}
               okText="Xóa"
               cancelText="Hủy"
@@ -218,7 +220,7 @@ export const ManageUserPage = () => {
                 danger
               />
             </Popconfirm>
-          </Tooltip> */}
+          </Tooltip>
         </Space>
       ),
     },
