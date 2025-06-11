@@ -84,7 +84,7 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuItem onClick={handleLogout}>
               <IconLogout />
-              Log out
+              Đăng xuất
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
