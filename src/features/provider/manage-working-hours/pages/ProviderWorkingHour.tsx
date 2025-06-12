@@ -15,7 +15,7 @@ import {
 import { WorkingHour, ApiResponse } from '../types/workingHour.types';
 import axiosInstance from '@/services/axios';
 
-const ProviderWorkingHours = () => {
+export const ProviderWorkingHoursPage = () => {
   const { user, token } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
 
@@ -278,6 +278,14 @@ const ProviderWorkingHours = () => {
                             Chỉnh sửa
                           </Button>
                           <Button
+                            variant="outline"
+                            onClick={() => navigate(`/provider/working-hours/detail/${hour.id!}`)}
+                            className="mr-2"
+                            disabled={loading}
+                          >
+                            Xem
+                          </Button>
+                          <Button
                             variant="destructive"
                             onClick={() => handleDelete(hour.id!)}
                             disabled={loading}
@@ -312,5 +320,3 @@ const ProviderWorkingHours = () => {
     </div>
   );
 };
-
-export default ProviderWorkingHours;

@@ -23,7 +23,7 @@
   import ProviderImages from '@/features/provider/manage-images/pages/ProviderImages';
   import ProviderMessages from '@/features/provider/manage-messages/pages/ProviderMessages';
   import ProviderRegisterPage from '@/features/provider/auth/pages/ProviderRegisterPage';
-  import ProviderWorkingHour from '@/features/provider/manage-working-hours/pages/ProviderWorkingHour';
+import { ProviderWorkingHoursPage, WorkingHourDetailPage } from '@/features/provider/manage-working-hours/pages'
   import ProviderSpaLocation from '@/features/provider/manage-branches/pages/ProviderSpaLocation';
   import { ManageAppointmentPage, ShowAppointmentPage } from '@/features/provider/manage-Appointment/pages';
 
@@ -67,7 +67,8 @@
             <Route path="/provider/staff/create" element={<CreateStaffPage />} />
             <Route path="/provider/staff/edit/:id" element={<EditStaffPage />} />
             <Route path="images" element={<ProviderImages />} />
-            <Route path="working-hours" element={<ProviderWorkingHour />} />
+            <Route path="working-hours" element={<ProviderWorkingHoursPage />} />
+            <Route path="working-hours/detail/:id" element={<WorkingHourDetailPage />} />
             <Route path="spa-location" element={<ProviderSpaLocation />} />
             <Route path="messages" element={<ProviderMessages />} />
            <Route path="appointments">
