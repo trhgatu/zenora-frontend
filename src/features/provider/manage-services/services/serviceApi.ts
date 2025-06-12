@@ -120,3 +120,8 @@ export const deleteService = async (authToken: string | null, id: string) => {
     throw new Error(axiosError.response?.data?.message || 'Lỗi khi xóa dịch vụ');
   }
 };
+
+export const getServiceById = async (id: string) => {
+  const response = await axiosInstance.get(`/api/Service/${id}`)
+  return response.data.data
+}

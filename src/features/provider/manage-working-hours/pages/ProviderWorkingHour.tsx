@@ -59,7 +59,7 @@ const ProviderWorkingHours = () => {
   const fetchBranches = async () => {
     try {
       const response = await axiosInstance.get<ApiResponse<{ id: string; branchName: string }[]>>(
-        `/SpaBranchLocation/by-provider/${user?._id}`,
+        `/api/SpaBranchLocation/by-provider/${user?._id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

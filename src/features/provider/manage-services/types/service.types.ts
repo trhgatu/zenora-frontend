@@ -9,7 +9,7 @@ export interface Service {
   isAvailable: boolean;
   createdTime: string;
   lastUpdatedTime: string;
-  deletedTime: string | null;
+  deletedTime: string;
 }
 
 export interface ServiceCategory {

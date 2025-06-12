@@ -3,7 +3,7 @@ import { useAppSelector } from '@/hooks';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Building, MapPin, Edit, Trash, Plus } from 'lucide-react';
+import { Edit, Trash, Plus } from 'lucide-react';
 import axiosInstance from '@/services/axios';
 import axios, { AxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -181,7 +181,6 @@ const ProviderSpaLocation = () => {
         return;
       }
 
-      console.log('Gửi yêu cầu lấy chi nhánh:', { providerId, token });
       const response = await axiosInstance.get<ApiResponse<SpaBranchLocation[]>>(
         `/api/SpaBranchLocation/by-provider/${providerId}`,
         {
@@ -456,7 +455,6 @@ const ProviderSpaLocation = () => {
       }));
       setDistricts([]);
       if (value) {
-        console.log('Fetching districts for province:', value);
         fetchDistricts(value);
       }
     } else if (name === 'districtId') {

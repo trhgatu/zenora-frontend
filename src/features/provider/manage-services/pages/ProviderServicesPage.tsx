@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { fetchCategories, fetchServices, deleteService } from '../services/serviceApi';
 import { Service, ServiceCategory } from '../types/service.types';
 
-const ProviderServicesPage = () => {
+export const ProviderServicesPage = () => {
   const { token, user } = useAppSelector((state) => state.auth);
   const providerId = user?._id || '';
   const navigate = useNavigate();
@@ -170,7 +170,7 @@ const ProviderServicesPage = () => {
                       {service.price.toLocaleString('vi-VN')}
                     </td>
                     <td className="border border-gray-200 px-4 py-2">{formatDuration(service.duration)}</td>
-                    <td className="border border-gray-200 px-4 py-2">
+                    <td className="border border-gray-200 px-4 py-2 flex items-center">
                       <Button
                         variant="outline"
                         onClick={() => navigate(`/provider/services/edit/${service.id}`)}
@@ -178,6 +178,14 @@ const ProviderServicesPage = () => {
                         disabled={loading}
                       >
                         Chỉnh sửa
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => navigate(`/provider/services/detail/${service.id}`)}
+                        className="mr-2"
+                        disabled={loading}
+                      >
+                        Xem
                       </Button>
                       <Button
                         variant="destructive"
@@ -197,5 +205,3 @@ const ProviderServicesPage = () => {
     </div>
   );
 };
-
-export default ProviderServicesPage;

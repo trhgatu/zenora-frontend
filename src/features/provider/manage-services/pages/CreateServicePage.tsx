@@ -5,7 +5,7 @@ import { fetchCategories, createService } from '../services/serviceApi';
 import ServiceForm from '../components/ServiceForm';
 import { ServiceCategory, ServiceFormData } from '../types/service.types';
 
-const CreateServicePage = () => {
+export const CreateServicePage = () => {
   const { token, user } = useAppSelector((state) => state.auth);
   const providerId = user?._id || '';
   const navigate = useNavigate();
@@ -115,5 +115,3 @@ const CreateServicePage = () => {
     </div>
   );
 };
-
-export default CreateServicePage;

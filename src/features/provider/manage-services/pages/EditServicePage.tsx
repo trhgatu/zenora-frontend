@@ -5,7 +5,7 @@ import { fetchCategories, fetchServices, updateService } from '../services/servi
 import ServiceForm from '../components/ServiceForm';
 import { Service, ServiceCategory, ServiceFormData } from '../types/service.types';
 
-const EditServicePage = () => {
+export const EditServicePage = () => {
   const { token, user } = useAppSelector((state) => state.auth);
   const providerId = user?._id || '';
   const { id } = useParams<{ id: string }>();
@@ -138,5 +138,3 @@ const EditServicePage = () => {
     </div>
   );
 };
-
-export default EditServicePage;
