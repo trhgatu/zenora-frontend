@@ -18,8 +18,10 @@ const ProviderSidebar: React.FC = () => {
     { label: 'Quản lý thông tin thợ', path: '/provider/staff' },
     { label: 'Quản lý hình ảnh', path: '/provider/images' },
     { label: 'Quản lý giờ làm việc', path: '/provider/working-hours' },
+    { label: 'Quản lý lịch hẹn', path: '/provider/appointments' },
     { label: 'Quản lý cơ sở', path: '/provider/spa-location' },
     { label: 'Tin nhắn', path: '/provider/messages' },
+
   ];
 
   return (

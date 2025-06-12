@@ -39,7 +39,7 @@
   import ProviderRegisterPage from '@/features/provider/auth/pages/ProviderRegisterPage';
   import ProviderWorkingHour from '@/features/provider/manage-working-hours/pages/ProviderWorkingHour';
   import ProviderSpaLocation from '@/features/provider/manage-branches/pages/ProviderSpaLocation';
-
+  import { ManageAppointmentPage, ShowAppointmentPage } from '@/features/provider/manage-Appointment/pages';
 
   function App() {
     const dispatch = useAppDispatch()
@@ -125,6 +125,10 @@
             <Route path="working-hours" element={<ProviderWorkingHour />} />
             <Route path="spa-location" element={<ProviderSpaLocation />} />
             <Route path="messages" element={<ProviderMessages />} />
+           <Route path="appointments">
+              <Route index element={<ManageAppointmentPage />} />
+              <Route path="show/:id" element={<ShowAppointmentPage />} />
+            </Route>
           </Route>
         </Route>
                 
